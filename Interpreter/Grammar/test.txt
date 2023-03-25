@@ -1,0 +1,12 @@
+﻿# this is a sample program in CODE
+BEGIN CODE
+INT x=1, y=2, z=3
+FLOAT f = 4.9
+CHAR a_1='a' 
+BOOL t="TRUE"
+BOOL n = NOT t
+x=y=4
+a_1='b'
+# this is a comment
+DISPLAY: x & t & z & $ & a_1 & a & $ & f & " " & [#] & "last"
+END CODE
