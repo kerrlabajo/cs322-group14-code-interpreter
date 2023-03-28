@@ -8,7 +8,7 @@ namespace Interpreter
     {
         static void Main(string[] args)
         {
-            var input = System.IO.File.ReadAllText("input.txt");
+            var input = System.IO.File.ReadAllText("test.txt");
 
             var inputStream = new AntlrInputStream(input);
             var lexer = new CodeGrammarLexer(inputStream);
