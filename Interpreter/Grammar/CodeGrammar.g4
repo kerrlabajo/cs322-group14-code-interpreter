@@ -5,11 +5,11 @@ program
     ;
 
 declaration
-    : variable_declaration (dollar_sign variable_declaration)*
+    : variable_declaration (DOLLAR_SIGN variable_declaration)*
     ;
 
 executable_code
-    : executable_statement (dollar_sign executable_statement)*
+    : executable_statement (DOLLAR_SIGN executable_statement)*
     ;
 
 variable_declaration
