@@ -80,4 +80,4 @@ WS          : [ \t\r\n]+ -> skip;
 LETTER      : [a-zA-Z];
 DIGIT       : [0-9];
 NUMBER      : DIGIT+ ('.' DIGIT+)?;
-dollar_sign : '$';
+DOLLAR_SIGN : '$';
