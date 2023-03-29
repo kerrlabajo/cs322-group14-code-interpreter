@@ -1,83 +1,89 @@
 ﻿grammar CodeGrammar;
 
-program
-    : 'BEGIN CODE' declaration? executable_code? 'END CODE'
-    ;
+program: block EOF;
 
-declaration
-    : variable_declaration (DOLLAR_SIGN variable_declaration)*
-    ;
+block: BEGIN_CODE declare* line* END_CODE;
 
-executable_code
-    : executable_statement (DOLLAR_SIGN executable_statement)*
-    ;
+declare: type ID ('=' exp)? (',' ID ('=' exp)?)* NEW_LINE;
 
-variable_declaration
-    : variable_name variable_type
-    ;
+line: (statement | if_block | while_block) NEW_LINE;
 
-variable_name
-    : LETTER (LETTER | DIGIT | '_')*
-    ;
+statement: assignment | call;
 
-variable_type
-    : 'INT' | 'CHAR' | 'BOOL' | 'FLOAT'
-    ;
+assignment: ID ('=' ID)* '=' exp;
 
-executable_statement
-    : variable_name ASSIGNMENT arithmetic_expression
-    | variable_name ASSIGNMENT bool_expression
-    | COMMENT
-    ;
+if_block: 'IF' '(' exp ')' BEGIN_IF line* END_IF else_if_block?;
 
-arithmetic_expression
-    : LPAREN arithmetic_expression RPAREN
-    | arithmetic_expression (MULTIPLICATION | DIVISION | MODULO) arithmetic_expression
-    | arithmetic_expression (ADDITION | SUBTRACTION) arithmetic_expression
-    | variable_name
-    | NUMBER
-    ;
+else_if_block: 'ELSE' (BEGIN_IF line* END_IF) | if_block;
 
-bool_expression
-    : bool_expression (AND | OR) bool_term
-    | bool_term
-    ;
+while_block: WHILE '(' exp ')' NEW_LINE BEGIN_WHILE NEW_LINE line* END_WHILE NEW_LINE;
 
-bool_term
-    : LPAREN bool_expression RPAREN
-    | variable_name
-    | TRUE
-    | FALSE
-    | NOT bool_term
-    | bool_comparison
-    ;
+call: DISPLAY (exp (',' exp)*)? | SCAN ID (',' ID)*;
 
-bool_comparison
-    : arithmetic_expression (EQUAL | NOT_EQUAL | GREATER_THAN | GREATER_THAN_OR_EQUAL | LESS_THAN | LESS_THAN_OR_EQUAL) arithmetic_expression
-    ;
+exp: const | ID | call | '(' exp ')' | 'NOT' exp | unary exp | exp mult_op exp | exp add_op exp | exp compare_op exp | exp logic_op exp | exp concat exp | NEXTLINE;
 
-LPAREN      : '(';
-RPAREN      : ')';
-MULTIPLICATION : '*';
-DIVISION    : '/';
-MODULO      : '%';
-ADDITION    : '+';
-SUBTRACTION : '-';
-ASSIGNMENT  : '=';
-EQUAL       : '==';
-NOT_EQUAL   : '<>';
-GREATER_THAN        : '>';
-GREATER_THAN_OR_EQUAL : '>=';
-LESS_THAN   : '<';
-LESS_THAN_OR_EQUAL  : '<=';
-AND         : 'AND';
-OR          : 'OR';
-NOT         : 'NOT';
-TRUE        : 'TRUE';
-FALSE       : 'FALSE';
-COMMENT     : '#' ~('\r' | '\n')*;
-WS          : [ \t\r\n]+ -> skip;
-LETTER      : [a-zA-Z];
-DIGIT       : [0-9];
-NUMBER      : DIGIT+ ('.' DIGIT+)?;
-DOLLAR_SIGN : '$';
+const: INTEGER_VALUE | FLOAT_VALUE | CHAR_VALUE | BOOL_VALUE | STRING_VALUE;
+
+type: INT | FLOAT | BOOL | CHAR | STRING;
+
+mult_op: '*' | '/' | '%';
+
+add_op: '+' | '-';
+
+compare_op: '==' | '<>' | '>' | '<' | '>=' | '<=';
+
+unary: '+' | '-';
+
+concat: '&';
+
+logic_op: LOGICAL_OPERATOR;
+
+LOGICAL_OPERATOR: 'AND' | 'OR' ;
+
+BEGIN_CODE: NEW_LINE? 'BEGIN CODE' NEW_LINE;
+
+END_CODE: 'END CODE' NEW_LINE?;
+
+BEGIN_IF: 'BEGIN IF';
+
+END_IF: 'END IF';
+
+WHILE: 'WHILE';
+
+BEGIN_WHILE: 'BEGIN WHILE';
+
+END_WHILE: 'END WHILE';
+
+INT: 'INT';
+
+FLOAT: 'FLOAT';
+
+CHAR: 'CHAR';
+
+BOOL: 'BOOL';
+
+STRING: 'STRING';
+
+ID: [a-zA-Z_][a-zA-Z0-9_]*;
+
+INTEGER_VALUE: [0-9]+;
+
+FLOAT_VALUE: [0-9]+ '.' [0-9]+;
+
+STRING_VALUE: '"' ( ~('"' | '\\') | '\\' . )* '"';
+
+BOOL_VALUE: '"TRUE"' | '"FALSE"';
+
+CHAR_VALUE: ('\'' ~[\r\n\'] '\'') | '[' .? ']';
+
+DISPLAY: 'DISPLAY:';
+
+SCAN: 'SCAN:';
+
+NEXTLINE: '$';
+
+COMMENT: '#' ~[\r\n]* NEW_LINE? -> skip;
+
+NEW_LINE: [\r?\n]+;
+
+WS: [ \t\r]+ -> skip;
