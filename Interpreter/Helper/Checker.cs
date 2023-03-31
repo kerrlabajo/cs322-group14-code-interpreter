@@ -36,12 +36,10 @@ namespace Interpreter.Helper
                     Environment.Exit(1);
                 }
 
-                //_isBeginCodeVisited = true;
-
                 // Declaration contains END CODE
                 if (context.declare().Length > 0 && context.declare().Any(d => d.GetText().Contains(endDelimiter) && d.GetText().IndexOf(endDelimiter) > 0))
                 {
-                    Console.WriteLine($"END CODE must be only at the end of the program");
+                    Console.WriteLine($"END CODE must only be at the end of the program");
                     Environment.Exit(1);
                 }
 
@@ -50,21 +48,21 @@ namespace Interpreter.Helper
             else if ((beginCode == null || beginCode == missingBeginCode) && (endCode != null || endCode != missingEndCode))
             {
                 // Only the end delimiter is present
-                Console.WriteLine("Missing BEGIN CODE delimiter");
+                Console.WriteLine("Missing BEGIN CODE");
                 Environment.Exit(1);
             }
 
             else if ((beginCode != null || beginCode != missingBeginCode) && (endCode == null || endCode == missingEndCode))
             {
                 // Only the begin delimiter is present
-                Console.WriteLine("Missing END CODE delimiter");
+                Console.WriteLine("Missing END CODE");
                 Environment.Exit(1);
             }
 
             else if ((beginCode == null || beginCode == missingBeginCode) && (endCode == null || endCode == missingEndCode))
             {
                 // Neither delimiter is present
-                Console.WriteLine("Missing delimiters");
+                Console.WriteLine("Missing BEGIN CODE and END CODE");
                 Environment.Exit(1);
             }
 

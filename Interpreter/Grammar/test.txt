@@ -1,5 +1,3 @@
-﻿#This is a sample program in CODE
-BEGIN CODE
-#This is an integer
+﻿BEGIN CODE
+
 END CODE
-#This is a sample program in CODE
