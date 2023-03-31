@@ -1,89 +1,78 @@
 ﻿grammar CodeGrammar;
 
-program: block EOF;
+program: NEWLINE? BEGIN_CODE NEWLINE line* NEWLINE END_CODE NEWLINE?;
 
-block: BEGIN_CODE declare* line* END_CODE;
+BEGIN_CODE: 'BEGIN CODE' ;
+END_CODE: 'END CODE' ;
 
-declare: type ID ('=' exp)? (',' ID ('=' exp)?)* NEW_LINE;
+line
+    : initialization
+	| variable
+    | assignment
+    | ifBlock 
+    | whileBlock
+	| call
+    | display
+    | scan
+	| COMMENTS
+    ;
 
-line: (statement | if_block | while_block) NEW_LINE;
+initialization: type IDENTIFIER (',' IDENTIFIER)* ('=' expression)? NEWLINE?;
+variable: type IDENTIFIER ('=' expression)? NEWLINE?;
+assignment: IDENTIFIER '=' expression NEWLINE?;
 
-statement: assignment | call;
+BEGIN_IF: 'BEGIN IF' ;
+END_IF: 'END IF' ;
+ifBlock: 'IF' '('expression')' NEWLINE BEGIN_IF NEWLINE line* NEWLINE END_IF NEWLINE? elseIfBlock? ;
+elseIfBlock: 'ELSE' (NEWLINE BEGIN_IF NEWLINE line* NEWLINE END_IF) | ifBlock ;
 
-assignment: ID ('=' ID)* '=' exp;
+WHILE: 'WHILE' ;
+BEGIN_WHILE: 'BEGIN WHILE' ;
+END_WHILE: 'END WHILE' ;
+whileBlock: WHILE '(' expression ')' NEWLINE BEGIN_WHILE NEWLINE line* NEWLINE END_WHILE ;
 
-if_block: 'IF' '(' exp ')' BEGIN_IF line* END_IF else_if_block?;
+call: IDENTIFIER ':' (expression (',' expression)*)? ;
+DISPLAY: 'DISPLAY:';
+display: NEWLINE? DISPLAY expression* ;
+SCAN: 'SCAN:';
+scan: SCAN IDENTIFIER (',' IDENTIFIER)* ;
 
-else_if_block: 'ELSE' (BEGIN_IF line* END_IF) | if_block;
-
-while_block: WHILE '(' exp ')' NEW_LINE BEGIN_WHILE NEW_LINE line* END_WHILE NEW_LINE;
-
-call: DISPLAY (exp (',' exp)*)? | SCAN ID (',' ID)*;
-
-exp: const | ID | call | '(' exp ')' | 'NOT' exp | unary exp | exp mult_op exp | exp add_op exp | exp compare_op exp | exp logic_op exp | exp concat exp | NEXTLINE;
-
-const: INTEGER_VALUE | FLOAT_VALUE | CHAR_VALUE | BOOL_VALUE | STRING_VALUE;
-
-type: INT | FLOAT | BOOL | CHAR | STRING;
-
-mult_op: '*' | '/' | '%';
-
-add_op: '+' | '-';
-
-compare_op: '==' | '<>' | '>' | '<' | '>=' | '<=';
-
-unary: '+' | '-';
-
-concat: '&';
-
-logic_op: LOGICAL_OPERATOR;
-
-LOGICAL_OPERATOR: 'AND' | 'OR' ;
-
-BEGIN_CODE: NEW_LINE? 'BEGIN CODE' NEW_LINE;
-
-END_CODE: 'END CODE' NEW_LINE?;
-
-BEGIN_IF: 'BEGIN IF';
-
-END_IF: 'END IF';
-
-WHILE: 'WHILE';
-
-BEGIN_WHILE: 'BEGIN WHILE';
-
-END_WHILE: 'END WHILE';
-
-INT: 'INT';
-
+type: INT | FLOAT | BOOL | CHAR ;
+INT: 'INT' ;
 FLOAT: 'FLOAT';
-
 CHAR: 'CHAR';
-
 BOOL: 'BOOL';
 
-STRING: 'STRING';
+constant: INTEGER_VALUES | FLOAT_VALUES | CHARACTER_VALUES | BOOLEAN_VALUES | STRING_VALUES ;
+INTEGER_VALUES: [0-9]+ ;
+FLOAT_VALUES: [0-9]+ '.' [0-9]+ ;
+CHARACTER_VALUES: '\'' ~[\r\n\'] '\'' ;
+BOOLEAN_VALUES:  '\"TRUE\"' | '\"FALSE\"' ;
+STRING_VALUES: ('"' ~'"'* '"') | ('\'' ~'\''* '\'') ;
 
-ID: [a-zA-Z_][a-zA-Z0-9_]*;
+expression
+    : constant                                            #constantValueExpression
+    | IDENTIFIER                                               #identifierExpression
+    | COMMENTS                                                  #commentExpression
+    | call                                                #methodCallExpression
+    | '(' expression ')'                                        #parenthesisExpression
+    | 'NOT' expression                                          #notExpression
+    | expression highPrecedenceOperator expression                 #multDivModExpression
+    | expression lowPrecedenceOperator expression         #addSubConcatenatorExpression
+    | expression comparisonOperator expression                 #comparisonExpression
+    | expression logicalOperator expression                    #logicalExpression
+    | escapeCodeOpen expression escapeCodeClose                 #escapeCodeExpression
+    ; 
 
-INTEGER_VALUE: [0-9]+;
+highPrecedenceOperator: '*' | '/' | '%' ;
+lowPrecedenceOperator: '+' | '-' | '&' ;
+comparisonOperator: '==' | '<>' | '>' | '<' | '>=' | '<='  ;
+logicalOperator: 'AND' | 'OR' | 'NOT' ;
+escapeCodeOpen: '[' ;
+escapeCodeClose: ']' ;
 
-FLOAT_VALUE: [0-9]+ '.' [0-9]+;
-
-STRING_VALUE: '"' ( ~('"' | '\\') | '\\' . )* '"';
-
-BOOL_VALUE: '"TRUE"' | '"FALSE"';
-
-CHAR_VALUE: ('\'' ~[\r\n\'] '\'') | '[' .? ']';
-
-DISPLAY: 'DISPLAY:';
-
-SCAN: 'SCAN:';
-
-NEXTLINE: '$';
-
-COMMENT: '#' ~[\r\n]* NEW_LINE? -> skip;
-
-NEW_LINE: [\r?\n]+;
-
-WS: [ \t\r]+ -> skip;
+IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* ;
+COMMENTS: '#' ~[\r\n]* -> skip ;
+NEXTLINE: '$' ;
+WHITESPACES: [ \t\r]+ -> skip ;
+NEWLINE: '\r'? '\n'| '\r';
