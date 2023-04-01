@@ -33,7 +33,7 @@ whileBlock: WHILE '(' expression ')' NEWLINE BEGIN_WHILE NEWLINE line* NEWLINE E
 
 call: IDENTIFIER ':' (expression (',' expression)*)? ;
 DISPLAY: 'DISPLAY:';
-display: NEWLINE? DISPLAY expression* ;
+display: NEWLINE? DISPLAY IDENTIFIER ('&' IDENTIFIER)* ('$' NEWLINE)? ;
 SCAN: 'SCAN:';
 scan: SCAN IDENTIFIER (',' IDENTIFIER)* ;
 
