@@ -54,10 +54,6 @@ namespace Interpreter.Grammar
             {
                 return VisitAssignment(context.assignment());
             }
-            else if (context.call() != null)
-            {
-                return VisitCall(context.call());
-            }
             else if (context.ifBlock() != null)
             {
                 return VisitIfBlock(context.ifBlock());
@@ -213,22 +209,29 @@ namespace Interpreter.Grammar
 
         public override object? VisitDisplay([NotNull] CodeGrammarParser.DisplayContext context)
         {
-            var varNamesToDisplay = context.IDENTIFIER().Select(x => x.GetText()).ToArray();
+            var varNamesToDisplay = context.expression().Select(x => x.GetText()).ToArray();
             foreach (var varName in varNamesToDisplay)
             {
-                if (_variables.TryGetValue(varName, out object? variableValue))
+                foreach(char varChar in varName)
                 {
-                    if (variableValue is bool boolValue)
+                    if(varChar == '$')
                     {
-                        Console.Write(boolValue ? "TRUE" : "FALSE");
+                        Console.WriteLine();
                     }
-                    else if (variableValue is float floatValue)
+                    else if (_variables.TryGetValue(varChar+"", out object? variableValue))
                     {
-                        Console.Write(floatValue.ToString("0.0###############"));
-                    }
-                    else
-                    {
-                        Console.Write(variableValue);
+                        if (variableValue is bool boolValue)
+                        {
+                            Console.Write(boolValue ? "TRUE" : "FALSE");
+                        }
+                        else if (variableValue is float floatValue)
+                        {
+                            Console.Write(floatValue.ToString("0.0###############"));
+                        }
+                        else
+                        {
+                            Console.Write(variableValue);
+                        }
                     }
                 }
             }
