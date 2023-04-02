@@ -11,7 +11,6 @@ line
     | assignment
     | ifBlock 
     | whileBlock
-	| call
     | display
     | scan
 	| COMMENTS
@@ -31,9 +30,8 @@ BEGIN_WHILE: 'BEGIN WHILE' ;
 END_WHILE: 'END WHILE' ;
 whileBlock: WHILE '(' expression ')' NEWLINE BEGIN_WHILE NEWLINE line* NEWLINE END_WHILE ;
 
-call: IDENTIFIER ':' (expression (',' expression)*)? ;
 DISPLAY: 'DISPLAY:';
-display: NEWLINE? DISPLAY expression* ;
+display: DISPLAY (expression (',' expression)*)? ;
 SCAN: 'SCAN:';
 scan: SCAN IDENTIFIER (',' IDENTIFIER)* ;
 
@@ -54,14 +52,17 @@ expression
     : constant                                            #constantValueExpression
     | IDENTIFIER                                               #identifierExpression
     | COMMENTS                                                  #commentExpression
-    | call                                                #methodCallExpression
+    | display                                               #displayExpression
+    | scan                                                  #scanExpression
     | '(' expression ')'                                        #parenthesisExpression
     | 'NOT' expression                                          #notExpression
     | expression highPrecedenceOperator expression                 #multDivModExpression
     | expression lowPrecedenceOperator expression         #addSubConcatenatorExpression
     | expression comparisonOperator expression                 #comparisonExpression
     | expression logicalOperator expression                    #logicalExpression
+    | expression concat expression                              #concatExpression
     | escapeCodeOpen expression escapeCodeClose                 #escapeCodeExpression
+    | expression NEXTLINE expression                                                  #nextLineExpression
     ; 
 
 highPrecedenceOperator: '*' | '/' | '%' ;
@@ -70,6 +71,7 @@ comparisonOperator: '==' | '<>' | '>' | '<' | '>=' | '<='  ;
 logicalOperator: 'AND' | 'OR' | 'NOT' ;
 escapeCodeOpen: '[' ;
 escapeCodeClose: ']' ;
+concat: '&' ;
 
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* ;
 COMMENTS: '#' ~[\r\n]* -> skip ;

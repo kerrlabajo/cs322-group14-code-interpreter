@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -52,10 +53,6 @@ namespace Interpreter.Grammar
             else if (context.assignment() != null)
             {
                 return VisitAssignment(context.assignment());
-            }
-            else if (context.call() != null)
-            {
-                return VisitCall(context.call());
             }
             else if (context.ifBlock() != null)
             {
@@ -212,12 +209,36 @@ namespace Interpreter.Grammar
 
         public override object? VisitDisplay([NotNull] CodeGrammarParser.DisplayContext context)
         {
-            foreach (var variable in _variables)
+            var varNamesToDisplay = context.expression().Select(x => x.GetText()).ToArray();
+            foreach (var varName in varNamesToDisplay)
             {
-                Console.WriteLine("{0}: {1}", variable.Key, variable.Value);
+                foreach(char varChar in varName)
+                {
+                    if(varChar == '$')
+                    {
+                        Console.WriteLine();
+                    }
+                    else if (_variables.TryGetValue(varChar+"", out object? variableValue))
+                    {
+                        if (variableValue is bool boolValue)
+                        {
+                            Console.Write(boolValue ? "TRUE" : "FALSE");
+                        }
+                        else if (variableValue is float floatValue)
+                        {
+                            Console.Write(floatValue.ToString("0.0###############"));
+                        }
+                        else
+                        {
+                            Console.Write(variableValue);
+                        }
+                    }
+                }
             }
+
             Console.WriteLine();
             return null;
         }
+
     }
 }
