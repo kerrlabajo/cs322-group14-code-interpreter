@@ -80,13 +80,13 @@ namespace Interpreter.Grammar
         {
             // Map string type names to corresponding Type objects
             var typeMap = new Dictionary<string, Type>()
-            {
-                { "INT", typeof(int) },
-                { "FLOAT", typeof(float) },
-                { "BOOL", typeof(bool) },
-                { "CHAR", typeof(char) },
-                { "STRING", typeof(string) }
-            };
+    {
+        { "INT", typeof(int) },
+        { "FLOAT", typeof(float) },
+        { "BOOL", typeof(bool) },
+        { "CHAR", typeof(char) },
+        { "STRING", typeof(string) }
+    };
 
             var typeStr = context.type().GetText();
             if (!typeMap.TryGetValue(typeStr, out var type))
@@ -96,7 +96,11 @@ namespace Interpreter.Grammar
             }
 
             var varNames = context.IDENTIFIER().Select(x => x.GetText()).ToArray();
-            var varValue = Visit(context.expression());
+            object? varValue = null;
+            if (context.expression() != null)
+            {
+                varValue = Visit(context.expression());
+            }
 
             foreach (var varName in varNames)
             {
@@ -170,12 +174,22 @@ namespace Interpreter.Grammar
         public override object? VisitConstantValueExpression([NotNull] CodeGrammarParser.ConstantValueExpressionContext context)
         {
             string? constantValue = context.constant().GetText();
+            bool isNegative = false;
+
+            if (constantValue.StartsWith("-"))
+            {
+                isNegative = true;
+                constantValue = constantValue.Substring(1);
+            }
+
             switch (context.constant())
             {
                 case var c when c.INTEGER_VALUES() != null:
-                    return int.Parse(constantValue);
+                    int intValue = int.Parse(constantValue);
+                    return isNegative ? -intValue : intValue;
                 case var c when c.FLOAT_VALUES() != null:
-                    return float.Parse(constantValue);
+                    float floatValue = float.Parse(constantValue);
+                    return isNegative ? -floatValue : floatValue;
                 case var c when c.CHARACTER_VALUES() != null:
                     return constantValue[1];
                 case var c when c.BOOLEAN_VALUES() != null:
@@ -278,6 +292,16 @@ namespace Interpreter.Grammar
                 Variables = variableNames,
                 Values = variableValues
             };
+        }
+
+        public override object? VisitPositiveExpression(CodeGrammarParser.PositiveExpressionContext context)
+        {
+            return Visit(context.expression());
+        }
+
+        public override object? VisitNegativeExpression(CodeGrammarParser.NegativeExpressionContext context)
+        {
+            return -(double)Visit(context.expression());
         }
 
     }

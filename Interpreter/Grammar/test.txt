@@ -1,7 +1,7 @@
 ﻿BEGIN CODE
-INT i = 1
-FLOAT f = 1.0
+INT i = -1
+FLOAT f = -1.0
 CHAR c = 'a'
 BOOL b = "TRUE"
-DISPLAY: b
+DISPLAY: i $ f $ c $ b
 END CODE
