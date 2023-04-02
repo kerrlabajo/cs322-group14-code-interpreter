@@ -143,7 +143,11 @@ namespace Interpreter.Grammar
         public override object? VisitAssignment([NotNull] CodeGrammarParser.AssignmentContext context)
         {
             var variableName = context.IDENTIFIER().GetText();
-            var variableValue = Visit(context.expression());
+            object? variableValue = null;
+            if (context.expression() != null)
+            {
+                variableValue = Visit(context.expression());
+            }
 
             if (!_variables.ContainsKey(variableName))
             {
