@@ -212,13 +212,13 @@ namespace Interpreter.Grammar
             var varNamesToDisplay = context.expression().Select(x => x.GetText()).ToArray();
             foreach (var varName in varNamesToDisplay)
             {
-                foreach(char varChar in varName)
+                foreach (char varChar in varName)
                 {
-                    if(varChar == '$')
+                    if (varChar == '$')
                     {
                         Console.WriteLine();
                     }
-                    else if (_variables.TryGetValue(varChar+"", out object? variableValue))
+                    else if (_variables.TryGetValue(varChar + "", out object? variableValue))
                     {
                         if (variableValue is bool boolValue)
                         {
@@ -238,6 +238,46 @@ namespace Interpreter.Grammar
 
             Console.WriteLine();
             return null;
+        }
+
+        public override object VisitScan([NotNull] CodeGrammarParser.ScanContext context)
+        {
+            List<string> variableNames = new List<string>();
+            List<object> variableValues = new List<object>();
+
+            foreach (var id in context.IDENTIFIER())
+            {
+                variableNames.Add(id.GetText());
+
+                // Prompt user to enter value for variable
+                Console.Write($"Enter value for {id.GetText()}: ");
+                var input = Console.ReadLine();
+
+                // Attempt to parse user input to appropriate data type
+                if (int.TryParse(input, out int intValue))
+                {
+                    variableValues.Add(intValue);
+                }
+                else if (double.TryParse(input, out double doubleValue))
+                {
+                    variableValues.Add(doubleValue);
+                }
+                else if (bool.TryParse(input, out bool boolValue))
+                {
+                    variableValues.Add(boolValue);
+                }
+                else
+                {
+                    variableValues.Add(input ?? ""); // handle null input
+                }
+            }
+
+            return new
+            {
+                Type = "SCAN",
+                Variables = variableNames,
+                Values = variableValues
+            };
         }
 
     }
