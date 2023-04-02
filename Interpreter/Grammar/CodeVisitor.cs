@@ -248,44 +248,32 @@ namespace Interpreter.Grammar
             return null;
         }
 
-        public override object VisitScan([NotNull] CodeGrammarParser.ScanContext context)
+        public override object? VisitScan([NotNull] CodeGrammarParser.ScanContext context)
         {
-            List<string> variableNames = new List<string>();
-            List<object> variableValues = new List<object>();
-
-            foreach (var id in context.IDENTIFIER())
+            foreach (var id in context.IDENTIFIER().Select(x => x.GetText()).ToArray())
             {
-                variableNames.Add(id.GetText());
-
-                // Prompt user to enter value for variable
-                Console.Write($"Enter value for {id.GetText()}: ");
+                Console.Write($"Enter value for {id}: ");
                 var input = Console.ReadLine();
 
-                // Attempt to parse user input to appropriate data type
                 if (int.TryParse(input, out int intValue))
                 {
-                    variableValues.Add(intValue);
+                    _variables[id] = intValue;
                 }
                 else if (double.TryParse(input, out double doubleValue))
                 {
-                    variableValues.Add(doubleValue);
+                    _variables[id] = doubleValue;
                 }
                 else if (bool.TryParse(input, out bool boolValue))
                 {
-                    variableValues.Add(boolValue);
+                    _variables[id] = boolValue;
                 }
                 else
                 {
-                    variableValues.Add(input ?? ""); // handle null input
+                    _variables[id] = input ?? "";
                 }
             }
 
-            return new
-            {
-                Type = "SCAN",
-                Variables = variableNames,
-                Values = variableValues
-            };
+            return null;
         }
 
     }
