@@ -96,7 +96,11 @@ namespace Interpreter.Grammar
             }
 
             var varNames = context.IDENTIFIER().Select(x => x.GetText()).ToArray();
-            var varValue = Visit(context.expression());
+            object? varValue = null;
+            if (context.expression() != null)
+            {
+                varValue = Visit(context.expression());
+            }
 
             foreach (var varName in varNames)
             {
