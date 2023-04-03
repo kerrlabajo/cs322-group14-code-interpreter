@@ -31,7 +31,7 @@ END_WHILE: 'END WHILE' ;
 whileBlock: WHILE '(' expression ')' NEWLINE BEGIN_WHILE NEWLINE line* NEWLINE END_WHILE ;
 
 DISPLAY: 'DISPLAY:';
-display: DISPLAY (expression (',' expression)*)? ;
+display: NEWLINE? DISPLAY (expression (',' expression)*)? ;
 SCAN: 'SCAN:';
 scan: SCAN IDENTIFIER (',' IDENTIFIER)* ;
 
@@ -49,8 +49,8 @@ BOOLEAN_VALUES:  '\"TRUE\"' | '\"FALSE\"' ;
 STRING_VALUES: ('"' ~'"'* '"') | ('\'' ~'\''* '\'') ;
 
 expression
-    : constant                                            #constantValueExpression
-    | IDENTIFIER                                               #identifierExpression
+    : constant                                                  #constantValueExpression
+    | IDENTIFIER                                                #identifierExpression
     | COMMENTS                                                  #commentExpression
     | display                                               #displayExpression
     | scan                                                  #scanExpression
@@ -58,13 +58,13 @@ expression
     | '-' expression                                            #negativeExpression
     | '(' expression ')'                                        #parenthesisExpression
     | 'NOT' expression                                          #notExpression
-    | expression highPrecedenceOperator expression                 #multDivModExpression
-    | expression lowPrecedenceOperator expression         #addSubConcatenatorExpression
-    | expression comparisonOperator expression                 #comparisonExpression
-    | expression logicalOperator expression                    #logicalExpression
+    | expression highPrecedenceOperator expression              #multDivModExpression
+    | expression lowPrecedenceOperator expression               #addSubConcatenatorExpression
+    | expression comparisonOperator expression                  #comparisonExpression
+    | expression logicalOperator expression                     #logicalExpression
     | expression concat expression                              #concatExpression
     | escapeCodeOpen expression escapeCodeClose                 #escapeCodeExpression
-    | expression NEXTLINE expression                                                  #nextLineExpression
+    | expression NEXTLINE expression                            #nextLineExpression
     ; 
 
 highPrecedenceOperator: '*' | '/' | '%' ;
