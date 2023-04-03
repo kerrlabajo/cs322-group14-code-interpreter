@@ -13,7 +13,6 @@ line
     | whileBlock
     | display
     | scan
-	| COMMENTS
     ;
 
 initialization: type IDENTIFIER (',' IDENTIFIER)* ('=' expression)? NEWLINE?;
@@ -35,6 +34,9 @@ display: NEWLINE? DISPLAY (expression (',' expression)*)? ;
 SCAN: 'SCAN:';
 scan: SCAN IDENTIFIER (',' IDENTIFIER)* ;
 
+escape
+    : escapeCodeOpen expression escapeCodeClose ;
+
 type: INT | FLOAT | BOOL | CHAR ;
 INT: 'INT' ;
 FLOAT: 'FLOAT';
@@ -49,20 +51,19 @@ BOOLEAN_VALUES:  '\"TRUE\"' | '\"FALSE\"' ;
 STRING_VALUES: ('"' ~'"'* '"') | ('\'' ~'\''* '\'') ;
 
 expression
-    : constant                                                  #constantValueExpression
-    | IDENTIFIER                                                #identifierExpression
-    | COMMENTS                                                  #commentExpression
-    | display                                                   #displayExpression
-    | scan                                                      #scanExpression
-    | '(' expression ')'                                        #parenthesisExpression
-    | 'NOT' expression                                          #notExpression
-    | expression highPrecedenceOperator expression              #multDivModExpression
-    | expression lowPrecedenceOperator expression               #addSubConcatenatorExpression
-    | expression comparisonOperator expression                  #comparisonExpression
-    | expression logicalOperator expression                     #logicalExpression
-    | expression concat expression                              #concatExpression
-    | escapeCodeOpen expression escapeCodeClose                 #escapeCodeExpression
-    | expression NEXTLINE expression                            #nextLineExpression
+    : constant                                                                      #constantValueExpression
+    | escape                                                                        #escapeCodeExpression
+    | IDENTIFIER                                                                    #identifierExpression
+    | display                                                                       #displayExpression
+    | scan                                                                          #scanExpression
+    | '(' expression ')'                                                            #parenthesisExpression
+    | 'NOT' expression                                                              #notExpression
+    | expression highPrecedenceOperator expression                                  #multDivModExpression
+    | expression lowPrecedenceOperator expression                                   #addSubConcatenatorExpression
+    | expression comparisonOperator expression                                      #comparisonExpression
+    | expression logicalOperator expression                                         #logicalExpression
+    | expression concat expression                                                  #concatExpression
+    | expression NEXTLINE expression                                                #nextLineExpression
     ; 
 
 highPrecedenceOperator: '*' | '/' | '%' ;
@@ -74,7 +75,7 @@ escapeCodeClose: ']' ;
 concat: '&' ;
 
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* ;
-COMMENTS: '#' ~[\r\n]* -> skip ;
+COMMENT: '#' ~[\r\n]* NEWLINE? -> skip ;
 NEXTLINE: '$' ;
 WHITESPACES: [ \t\r]+ -> skip ;
 NEWLINE: '\r'? '\n'| '\r';
