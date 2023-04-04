@@ -34,9 +34,6 @@ display: NEWLINE? DISPLAY (expression (',' expression)*)? ;
 SCAN: 'SCAN:';
 scan: SCAN IDENTIFIER (',' IDENTIFIER)* ;
 
-escape
-    : escapeCodeOpen expression escapeCodeClose ;
-
 type: INT | FLOAT | BOOL | CHAR ;
 INT: 'INT' ;
 FLOAT: 'FLOAT';
@@ -46,13 +43,12 @@ BOOL: 'BOOL';
 constant: INTEGER_VALUES | FLOAT_VALUES | CHARACTER_VALUES | BOOLEAN_VALUES | STRING_VALUES ;
 INTEGER_VALUES: [0-9]+ ;
 FLOAT_VALUES: [0-9]+ '.' [0-9]+ ;
-CHARACTER_VALUES: '\'' ~[\r\n\'] '\'' ;
+CHARACTER_VALUES: ('\'' ~[\r\n\'] '\'') | '[' .? ']' ; 
 BOOLEAN_VALUES:  '\"TRUE\"' | '\"FALSE\"' ;
-STRING_VALUES: ('"' ~'"'* '"') | ('\'' ~'\''* '\'') ;
+STRING_VALUES: '"' ( ~('"' | '\\') | '\\' . )* '"';
 
 expression
     : constant                                                                      #constantValueExpression
-    | escape                                                                        #escapeCodeExpression
     | IDENTIFIER                                                                    #identifierExpression
     | display                                                                       #displayExpression
     | scan                                                                          #scanExpression
@@ -70,12 +66,10 @@ highPrecedenceOperator: '*' | '/' | '%' ;
 lowPrecedenceOperator: '+' | '-' | '&' ;
 comparisonOperator: '==' | '<>' | '>' | '<' | '>=' | '<='  ;
 logicalOperator: 'AND' | 'OR' | 'NOT' ;
-escapeCodeOpen: '[' ;
-escapeCodeClose: ']' ;
 concat: '&' ;
 
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* ;
-COMMENT: '#' ~[\r\n]* NEWLINE? -> skip ;
+COMMENT: '#' ~[\r\n]* NEWLINE -> channel(HIDDEN) ;
 NEXTLINE: '$' ;
 WHITESPACES: [ \t\r]+ -> skip ;
 NEWLINE: '\r'? '\n'| '\r';
