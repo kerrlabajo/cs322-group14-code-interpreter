@@ -217,34 +217,50 @@ namespace Interpreter.Grammar
 
         public override object? VisitDisplay([NotNull] CodeGrammarParser.DisplayContext context)
         {
-            var varNamesToDisplay = context.expression().Select(x => x.GetText()).ToArray();
-            foreach (var varName in varNamesToDisplay)
+            try
             {
-                foreach (char varChar in varName)
+                var varNamesToDisplay = context.expression().Select(x => x.GetText()).ToArray();
+                foreach (var varName in varNamesToDisplay)
                 {
-                    if (varChar == '$')
+                    char? prev = null;
+                    foreach (char varChar in varName)
                     {
-                        Console.WriteLine();
-                    }
-                    else if (_variables.TryGetValue(varChar + "", out object? variableValue))
-                    {
-                        if (variableValue is bool boolValue)
+                        if (_variables.TryGetValue(varChar + "", out object? variableValue))
                         {
-                            Console.Write(boolValue ? "TRUE" : "FALSE");
+                            if (variableValue is bool boolValue)
+                            {
+                                Console.Write(boolValue ? "TRUE" : "FALSE");
+                            }
+                            else if (variableValue is float floatValue)
+                            {
+                                Console.Write(floatValue.ToString("0.0###############"));
+                            }
+                            else
+                            {
+                                Console.Write(variableValue);
+                            }
                         }
-                        else if (variableValue is float floatValue)
+                        else if (varChar == '$' && prev != '[')
                         {
-                            Console.Write(floatValue.ToString("0.0###############"));
+                            Console.WriteLine();
                         }
-                        else
+                        else if (varChar == '[' || varChar == ']' || varChar == '"')
                         {
-                            Console.Write(variableValue);
+                            prev = varChar;
+                            continue;
+                        }
+                        else if (varChar != '&' || (varChar == '&' && prev == '['))
+                        {
+                            Console.Write(varChar);
                         }
                     }
                 }
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
 
-            Console.WriteLine();
             return null;
         }
 
