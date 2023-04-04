@@ -364,7 +364,105 @@ namespace Interpreter.Grammar
             }
         }
 
-        
+        public override object VisitAddSubConcatenatorExpression([NotNull] CodeGrammarParser.AddSubConcatenatorExpressionContext context)
+        {
+            // There are two child nodes, so we need to handle the operator and the operands
+            var left = Visit(context.expression(0));
+            var right = Visit(context.expression(1));
+
+            var op = context.lowPrecedenceOperator().GetText();
+
+            // Check the types of the operands
+            if (left is int leftInt && right is int rightInt)
+            {
+                // Both operands are integers
+                if (op == "+")
+                {
+                    return leftInt + rightInt;
+                }
+                else if (op == "-")
+                {
+                    return leftInt - rightInt;
+                }
+                else if (op == "&")
+                {
+                    return leftInt.ToString() + rightInt.ToString();
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is float leftFloat && right is float rightFloat)
+            {
+                // Both operands are floats
+                if (op == "+")
+                {
+                    return leftFloat + rightFloat;
+                }
+                else if (op == "-")
+                {
+                    return leftFloat - rightFloat;
+                }
+                else if (op == "&")
+                {
+                    return leftFloat.ToString() + rightFloat.ToString();
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is int leftInt2 && right is float rightFloat2)
+            {
+                // One operand is an integer and the other is a float
+                if (op == "+")
+                {
+                    return leftInt2 + rightFloat2;
+                }
+                else if (op == "-")
+                {
+                    return leftInt2 - rightFloat2;
+                }
+                else if (op == "&")
+                {
+                    return leftInt2.ToString() + rightFloat2.ToString();
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is float leftFloat2 && right is int rightInt2)
+            {
+                // One operand is a float and the other is an integer
+                if (op == "+")
+                {
+                    return leftFloat2 + rightInt2;
+                }
+                else if (op == "-")
+                {
+                    return leftFloat2 - rightInt2;
+                }
+                else if (op == "&")
+                {
+                    return leftFloat2.ToString() + rightInt2.ToString();
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left == null || right == null)
+            {
+                throw new ArgumentNullException("Operand cannot be null.");
+            }
+            else
+            {
+                // Operands are of different types
+                throw new ArgumentException($"Cannot perform operation on operands of different types: {left.GetType().Name} and {right.GetType().Name}");
+            }
+        }
 
     }
 }
