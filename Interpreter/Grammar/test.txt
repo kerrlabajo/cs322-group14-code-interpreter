@@ -1,7 +1,5 @@
 ﻿BEGIN CODE
-INT i = -1
-FLOAT f = -1.0
-CHAR c = 'a'
-BOOL b = "TRUE"
-DISPLAY: i $ f $ c $ b
+INT x = 1
+INT y, z = 2
+y = z
 END CODE

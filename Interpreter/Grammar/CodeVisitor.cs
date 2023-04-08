@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
 
 namespace Interpreter.Grammar
 {
@@ -21,6 +22,10 @@ namespace Interpreter.Grammar
                 foreach (var linesContext in context.line())
                 {
                     VisitLine(linesContext);
+                }
+                foreach (KeyValuePair<string, object?> kvp in _variables)
+                {
+                    Console.WriteLine("Variable = {0}, Value = {1}", kvp.Key, kvp.Value);
                 }
                 Console.WriteLine("Code is successful");
             }
@@ -101,6 +106,14 @@ namespace Interpreter.Grammar
             {
                 varValue = Visit(context.expression());
             }
+            else if (context.ASSIGN() != null)
+            {
+                var defaultValueCtx = context.expression();
+                if (defaultValueCtx != null)
+                {
+                    varValue = Convert.ChangeType(defaultValueCtx.GetText(), type);
+                }
+            }
 
             foreach (var varName in varNames)
             {
@@ -115,7 +128,16 @@ namespace Interpreter.Grammar
                     {
                         convertedValue = TypeDescriptor.GetConverter(type).ConvertFrom(varValue);
                     }
-                    _variables[varName] = convertedValue;
+
+                    // Only assign a value to the variable if it has a default value
+                    if (varName == varNames.Last() && convertedValue != null)
+                    {
+                        _variables[varName] = convertedValue;
+                    }
+                    else
+                    {
+                        _variables[varName] = null;
+                    }
                 }
             }
 
@@ -132,9 +154,23 @@ namespace Interpreter.Grammar
 
             var dataType = (Type)dataTypeObj;
             var variableName = context.IDENTIFIER().GetText();
-            var variableValue = VisitExpression(context.expression());
 
-            var varValueWithType = Convert.ChangeType(variableValue, dataType);
+            object? variableValue = null;
+            if (context.expression() != null)
+            {
+                variableValue = VisitExpression(context.expression());
+            }
+            else if (_variables.ContainsKey(variableName))
+            {
+                variableValue = _variables[variableName];
+            }
+
+            object? varValueWithType = null;
+            if (variableValue != null)
+            {
+                varValueWithType = Convert.ChangeType(variableValue, dataType);
+            }
+
             _variables[variableName] = varValueWithType;
 
             return varValueWithType;
@@ -142,36 +178,44 @@ namespace Interpreter.Grammar
 
         public override object? VisitAssignment([NotNull] CodeGrammarParser.AssignmentContext context)
         {
-            var variableName = context.IDENTIFIER().GetText();
             object? variableValue = null;
             if (context.expression() != null)
             {
                 variableValue = Visit(context.expression());
             }
 
-            if (!_variables.ContainsKey(variableName))
+            foreach (var childContext in context.children)
             {
-                Console.WriteLine($"Variable '{variableName}' is not defined!");
-                return null;
+                if (childContext is TerminalNodeImpl node && node.Symbol.Type == CodeGrammarLexer.IDENTIFIER)
+                {
+                    var variableName = node.GetText();
+
+                    if (!_variables.ContainsKey(variableName))
+                    {
+                        Console.WriteLine($"Variable '{variableName}' is not defined!");
+                        return null;
+                    }
+
+                    var existingValue = _variables[variableName];
+                    if (existingValue == null && variableValue != null)
+                    {
+                        Console.WriteLine($"Cannot assign non-null value to null variable '{variableName}'");
+                        return null;
+                    }
+
+                    var existingType = existingValue?.GetType();
+                    var valueType = variableValue?.GetType();
+
+                    if (existingType != null && valueType != null && existingType != valueType)
+                    {
+                        Console.WriteLine($"Cannot assign value of type '{valueType.Name}' to variable '{variableName}' of type '{existingType.Name}'");
+                        return null;
+                    }
+
+                    _variables[variableName] = variableValue;
+                }
             }
 
-            var existingValue = _variables[variableName];
-            if (existingValue == null && variableValue != null)
-            {
-                Console.WriteLine($"Cannot assign non-null value to null variable '{variableName}'");
-                return null;
-            }
-
-            var existingType = existingValue?.GetType();
-            var valueType = variableValue?.GetType();
-
-            if (existingType != null && valueType != null && existingType != valueType)
-            {
-                Console.WriteLine($"Cannot assign value of type '{valueType.Name}' to variable '{variableName}' of type '{existingType.Name}'");
-                return null;
-            }
-
-            _variables[variableName] = variableValue;
             return null;
         }
 
@@ -295,6 +339,5 @@ namespace Interpreter.Grammar
         {
             return -(double)Visit(context.expression());
         }
-
     }
 }

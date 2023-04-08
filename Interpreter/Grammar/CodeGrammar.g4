@@ -13,12 +13,12 @@ line
     | whileBlock
     | display
     | scan
-	| COMMENTS
     ;
 
-initialization: type IDENTIFIER (',' IDENTIFIER)* ('=' expression)? NEWLINE?;
-variable: type IDENTIFIER ('=' expression)? NEWLINE?;
-assignment: IDENTIFIER '=' expression NEWLINE?;
+ASSIGN: '=';
+initialization: type IDENTIFIER (',' IDENTIFIER)* (ASSIGN expression)? NEWLINE?;
+variable: type IDENTIFIER (ASSIGN expression)? NEWLINE?;
+assignment: IDENTIFIER ASSIGN expression NEWLINE?;
 
 BEGIN_IF: 'BEGIN IF' ;
 END_IF: 'END IF' ;
@@ -52,8 +52,8 @@ expression
     : constant                                                  #constantValueExpression
     | IDENTIFIER                                                #identifierExpression
     | COMMENTS                                                  #commentExpression
-    | display                                               #displayExpression
-    | scan                                                  #scanExpression
+    | display                                                   #displayExpression
+    | scan                                                      #scanExpression
     | '+' expression                                            #positiveExpression
     | '-' expression                                            #negativeExpression
     | '(' expression ')'                                        #parenthesisExpression
@@ -63,7 +63,6 @@ expression
     | expression comparisonOperator expression                  #comparisonExpression
     | expression logicalOperator expression                     #logicalExpression
     | expression concat expression                              #concatExpression
-    | escapeCodeOpen expression escapeCodeClose                 #escapeCodeExpression
     | expression NEXTLINE expression                            #nextLineExpression
     ; 
 
@@ -71,12 +70,10 @@ highPrecedenceOperator: '*' | '/' | '%' ;
 lowPrecedenceOperator: '+' | '-' | '&' ;
 comparisonOperator: '==' | '<>' | '>' | '<' | '>=' | '<='  ;
 logicalOperator: 'AND' | 'OR' | 'NOT' ;
-escapeCodeOpen: '[' ;
-escapeCodeClose: ']' ;
 concat: '&' ;
 
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* ;
-COMMENTS: '#' ~[\r\n]* -> skip ;
+COMMENT: '#' ~[\r\n]* NEWLINE? -> skip ;
 NEXTLINE: '$' ;
 WHITESPACES: [ \t\r]+ -> skip ;
 NEWLINE: '\r'? '\n'| '\r';
