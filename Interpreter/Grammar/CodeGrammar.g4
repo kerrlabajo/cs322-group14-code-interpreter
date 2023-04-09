@@ -15,9 +15,10 @@ line
     | scan
     ;
 
-initialization: type IDENTIFIER (',' IDENTIFIER)* ('=' expression)? NEWLINE?;
-variable: type IDENTIFIER ('=' expression)? NEWLINE?;
-assignment: IDENTIFIER '=' expression NEWLINE?;
+ASSIGN: '=';
+initialization: type IDENTIFIER (',' IDENTIFIER)* (ASSIGN expression)? NEWLINE?;
+variable: type IDENTIFIER (ASSIGN expression)? NEWLINE?;
+assignment: IDENTIFIER ASSIGN expression NEWLINE?;
 
 BEGIN_IF: 'BEGIN IF' ;
 END_IF: 'END IF' ;
@@ -41,25 +42,28 @@ CHAR: 'CHAR';
 BOOL: 'BOOL';
 
 constant: INTEGER_VALUES | FLOAT_VALUES | CHARACTER_VALUES | BOOLEAN_VALUES | STRING_VALUES ;
-INTEGER_VALUES: [0-9]+ ;
-FLOAT_VALUES: [0-9]+ '.' [0-9]+ ;
-CHARACTER_VALUES: ('\'' ~[\r\n\'] '\'') | '[' .? ']' ; 
+INTEGER_VALUES: ('+'|'-')? [0-9]+ ;
+FLOAT_VALUES: ('+'|'-')? [0-9]+ '.' [0-9]+ ;
+CHARACTER_VALUES: ('\'' ~[\r\n\'] '\'') | '[' .? ']' ;
 BOOLEAN_VALUES:  '\"TRUE\"' | '\"FALSE\"' ;
 STRING_VALUES: '"' ( ~('"' | '\\') | '\\' . )* '"';
 
 expression
-    : constant                                                                      #constantValueExpression
-    | IDENTIFIER                                                                    #identifierExpression
-    | display                                                                       #displayExpression
-    | scan                                                                          #scanExpression
-    | '(' expression ')'                                                            #parenthesisExpression
-    | 'NOT' expression                                                              #notExpression
-    | expression highPrecedenceOperator expression                                  #multDivModExpression
-    | expression lowPrecedenceOperator expression                                   #addSubConcatenatorExpression
-    | expression comparisonOperator expression                                      #comparisonExpression
-    | expression logicalOperator expression                                         #logicalExpression
-    | expression concat expression                                                  #concatExpression
-    | expression NEXTLINE expression                                                #nextLineExpression
+    : constant                                                  #constantValueExpression
+    | IDENTIFIER                                                #identifierExpression
+    | COMMENTS                                                  #commentExpression
+    | display                                                   #displayExpression
+    | scan                                                      #scanExpression
+    | '+' expression                                            #positiveExpression
+    | '-' expression                                            #negativeExpression
+    | '(' expression ')'                                        #parenthesisExpression
+    | 'NOT' expression                                          #notExpression
+    | expression highPrecedenceOperator expression              #multDivModExpression
+    | expression lowPrecedenceOperator expression               #addSubConcatenatorExpression
+    | expression comparisonOperator expression                  #comparisonExpression
+    | expression logicalOperator expression                     #logicalExpression
+    | expression concat expression                              #concatExpression
+    | expression NEXTLINE expression                            #nextLineExpression
     ; 
 
 highPrecedenceOperator: '*' | '/' | '%' ;
