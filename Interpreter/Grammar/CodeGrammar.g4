@@ -13,7 +13,6 @@ line
     | whileBlock
     | display
     | scan
-	| COMMENTS
     ;
 
 initialization: type IDENTIFIER (',' IDENTIFIER)* ('=' expression)? NEWLINE?;
@@ -31,7 +30,7 @@ END_WHILE: 'END WHILE' ;
 whileBlock: WHILE '(' expression ')' NEWLINE BEGIN_WHILE NEWLINE line* NEWLINE END_WHILE ;
 
 DISPLAY: 'DISPLAY:';
-display: DISPLAY (expression (',' expression)*)? ;
+display: NEWLINE? DISPLAY (expression (',' expression)*)? ;
 SCAN: 'SCAN:';
 scan: SCAN IDENTIFIER (',' IDENTIFIER)* ;
 
@@ -44,37 +43,33 @@ BOOL: 'BOOL';
 constant: INTEGER_VALUES | FLOAT_VALUES | CHARACTER_VALUES | BOOLEAN_VALUES | STRING_VALUES ;
 INTEGER_VALUES: [0-9]+ ;
 FLOAT_VALUES: [0-9]+ '.' [0-9]+ ;
-CHARACTER_VALUES: '\'' ~[\r\n\'] '\'' ;
+CHARACTER_VALUES: ('\'' ~[\r\n\'] '\'') | '[' .? ']' ; 
 BOOLEAN_VALUES:  '\"TRUE\"' | '\"FALSE\"' ;
-STRING_VALUES: ('"' ~'"'* '"') | ('\'' ~'\''* '\'') ;
+STRING_VALUES: '"' ( ~('"' | '\\') | '\\' . )* '"';
 
 expression
-    : constant                                            #constantValueExpression
-    | IDENTIFIER                                               #identifierExpression
-    | COMMENTS                                                  #commentExpression
-    | display                                               #displayExpression
-    | scan                                                  #scanExpression
-    | '(' expression ')'                                        #parenthesisExpression
-    | 'NOT' expression                                          #notExpression
-    | expression highPrecedenceOperator expression                 #multDivModExpression
-    | expression lowPrecedenceOperator expression         #addSubConcatenatorExpression
-    | expression comparisonOperator expression                 #comparisonExpression
-    | expression logicalOperator expression                    #logicalExpression
-    | expression concat expression                              #concatExpression
-    | escapeCodeOpen expression escapeCodeClose                 #escapeCodeExpression
-    | expression NEXTLINE expression                                                  #nextLineExpression
+    : constant                                                                      #constantValueExpression
+    | IDENTIFIER                                                                    #identifierExpression
+    | display                                                                       #displayExpression
+    | scan                                                                          #scanExpression
+    | '(' expression ')'                                                            #parenthesisExpression
+    | 'NOT' expression                                                              #notExpression
+    | expression highPrecedenceOperator expression                                  #multDivModExpression
+    | expression lowPrecedenceOperator expression                                   #addSubConcatenatorExpression
+    | expression comparisonOperator expression                                      #comparisonExpression
+    | expression logicalOperator expression                                         #logicalExpression
+    | expression concat expression                                                  #concatExpression
+    | expression NEXTLINE expression                                                #nextLineExpression
     ; 
 
 highPrecedenceOperator: '*' | '/' | '%' ;
 lowPrecedenceOperator: '+' | '-' | '&' ;
 comparisonOperator: '==' | '<>' | '>' | '<' | '>=' | '<='  ;
 logicalOperator: 'AND' | 'OR' | 'NOT' ;
-escapeCodeOpen: '[' ;
-escapeCodeClose: ']' ;
 concat: '&' ;
 
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* ;
-COMMENTS: '#' ~[\r\n]* -> skip ;
+COMMENT: '#' ~[\r\n]* NEWLINE -> channel(HIDDEN) ;
 NEXTLINE: '$' ;
 WHITESPACES: [ \t\r]+ -> skip ;
 NEWLINE: '\r'? '\n'| '\r';
