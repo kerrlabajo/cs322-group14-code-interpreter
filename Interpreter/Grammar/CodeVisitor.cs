@@ -317,6 +317,19 @@ namespace Interpreter.Grammar
         {
             return -(double)Visit(context.expression());
         }
+
+        public override object? VisitNextLineExpression([NotNull] CodeGrammarParser.NextLineExpressionContext context)
+        {
+            return "\n";
+        }
+
+        public override object? VisitConcatExpression([NotNull] CodeGrammarParser.ConcatExpressionContext context)
+        {
+            var left = Visit(context.expression(0));
+            var right = Visit(context.expression(1));
+
+            return $"{left}{right}";
+        }
         public override object? VisitMultDivModExpression([NotNull] CodeGrammarParser.MultDivModExpressionContext context)
         {
             if (context.children.Count == 1)
