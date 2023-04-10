@@ -1,9 +1,12 @@
 ﻿BEGIN CODE
-INT ab = 23
-FLOAT i = 3.14
-INT d = -5
-CHAR c = 'a'
-BOOL f = "TRUE"
+INT x, y, z=5 
+CHAR a_1='n' 
+BOOL t="TRUE"
 # GOODS
-DISPLAY: ab $ [[] & c & []] $ f & [#] $ "Hello World" $ i $ [[]] & ab & []] $ d
+x=4
+y=4
+# NOT GOODS -> x=y=4
+a_1='c'
+# this is a comment
+DISPLAY: x & t & z & $ & a_1 & [#] & "last"
 END CODE
