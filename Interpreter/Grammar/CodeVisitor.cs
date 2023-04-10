@@ -336,6 +336,12 @@ namespace Interpreter.Grammar
             return -(double)Visit(context.expression());
         }
 
+        public override object? VisitParenthesisExpression([NotNull] CodeGrammarParser.ParenthesisExpressionContext context)
+        {
+            // Visit the inner expression and return its result
+            return Visit(context.expression());
+        }
+
         public override object? VisitMultDivModExpression([NotNull] CodeGrammarParser.MultDivModExpressionContext context)
         {
             if (context.children.Count == 1)
