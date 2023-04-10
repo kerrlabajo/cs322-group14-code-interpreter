@@ -24,10 +24,6 @@ namespace Interpreter.Grammar
                 {
                     VisitLine(linesContext);
                 }
-                foreach (KeyValuePair<string, object?> kvp in _variables)
-                {
-                    Console.WriteLine("Variable = {0}, Value = {1}", kvp.Key, kvp.Value);
-                }
                 Console.WriteLine("\nCode is successful");
             }
             else if (program.StartsWith("BEGIN CODE") && program.EndsWith("BEGIN CODE"))
