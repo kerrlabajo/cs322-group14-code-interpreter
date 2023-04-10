@@ -55,9 +55,13 @@ namespace Interpreter.Grammar
             {
                 return VisitVariable(context.variable());
             }
-            else if (context.assignment() != null)
+            else if (context.singleAssignment() != null)
             {
-                return VisitAssignment(context.assignment());
+                return VisitSingleAssignment(context.singleAssignment());
+            }
+            else if (context.multipleAssignments() != null)
+            {
+                return VisitMultipleAssignments(context.multipleAssignments());
             }
             else if (context.ifBlock() != null)
             {
@@ -102,17 +106,10 @@ namespace Interpreter.Grammar
 
             var varNames = context.IDENTIFIER().Select(x => x.GetText()).ToArray();
             object? varValue = null;
+
             if (context.expression() != null)
             {
                 varValue = Visit(context.expression());
-            }
-            else if (context.ASSIGN() != null)
-            {
-                var defaultValueCtx = context.expression();
-                if (defaultValueCtx != null)
-                {
-                    varValue = Convert.ChangeType(defaultValueCtx.GetText(), type);
-                }
             }
 
             foreach (var varName in varNames)
@@ -120,25 +117,25 @@ namespace Interpreter.Grammar
                 if (_variables.ContainsKey(varName))
                 {
                     Console.WriteLine($"Variable '{varName}' is already defined!");
+                    continue;
                 }
-                else
+
+                var convertedValue = varValue;
+
+                if (varValue != null && type != varValue.GetType())
                 {
-                    var convertedValue = varValue;
-                    if (varValue != null && type != varValue.GetType())
+                    if (TypeDescriptor.GetConverter(type).CanConvertFrom(varValue.GetType()))
                     {
                         convertedValue = TypeDescriptor.GetConverter(type).ConvertFrom(varValue);
                     }
-
-                    // Only assign a value to the variable if it has a default value
-                    if (varName == varNames.Last() && convertedValue != null)
-                    {
-                        _variables[varName] = convertedValue;
-                    }
                     else
                     {
-                        _variables[varName] = null;
+                        Console.WriteLine($"Cannot convert value '{varValue}' to type '{typeStr}'");
+                        continue;
                     }
                 }
+
+                _variables.Add(varName, convertedValue);
             }
 
             return null;
@@ -147,75 +144,68 @@ namespace Interpreter.Grammar
         public override object? VisitVariable([NotNull] CodeGrammarParser.VariableContext context)
         {
             var dataTypeObj = VisitType(context.type());
-            if (dataTypeObj is null)
+            if (dataTypeObj is not Type dataType)
             {
-                throw new Exception("Invalid data type");
+                throw new ArgumentException("Invalid data type");
             }
 
-            var dataType = (Type)dataTypeObj;
             var variableName = context.IDENTIFIER().GetText();
+            var variableValue = VisitExpression(context.expression());
 
-            object? variableValue = null;
-            if (context.expression() != null)
+            if (variableValue is null)
             {
-                variableValue = VisitExpression(context.expression());
-            }
-            else if (_variables.ContainsKey(variableName))
-            {
-                variableValue = _variables[variableName];
-            }
+                if (dataType.IsValueType)
+                {
+                    throw new ArgumentException("Cannot assign null to value type");
+                }
 
-            object? varValueWithType = null;
-            if (variableValue != null)
-            {
-                varValueWithType = Convert.ChangeType(variableValue, dataType);
+                _variables[variableName] = null;
+                return null;
             }
 
-            _variables[variableName] = varValueWithType;
+            if (dataType.IsAssignableFrom(variableValue.GetType()))
+            {
+                _variables[variableName] = variableValue;
+                return variableValue;
+            }
 
-            return varValueWithType;
+            try
+            {
+                var convertedValue = Convert.ChangeType(variableValue, dataType);
+                _variables[variableName] = convertedValue;
+                return convertedValue;
+            }
+            catch (Exception)
+            {
+                throw new ArgumentException($"Cannot convert value '{variableValue}' to type '{dataType.Name}'");
+            }
         }
 
-        public override object? VisitAssignment([NotNull] CodeGrammarParser.AssignmentContext context)
+        public override object? VisitSingleAssignment([NotNull] CodeGrammarParser.SingleAssignmentContext context)
         {
-            object? variableValue = null;
-            if (context.expression() != null)
-            {
-                variableValue = Visit(context.expression());
-            }
+            var variableName = context.IDENTIFIER().GetText();
+            var variableValue = Visit(context.expression());
 
-            foreach (var childContext in context.children)
+            _variables[variableName] = variableValue;
+
+            return _variables[variableName];
+        }
+
+        public override object? VisitMultipleAssignments([NotNull] CodeGrammarParser.MultipleAssignmentsContext context)
+        {
+            var identifiers = context.IDENTIFIER();
+            foreach (var identifier in identifiers)
             {
-                if (childContext is TerminalNodeImpl node && node.Symbol.Type == CodeGrammarLexer.IDENTIFIER)
+                string variableName = identifier.GetText();
+                object? variableValue = context.expression().Accept(this);
+
+                if (variableName == null || variableValue == null)
                 {
-                    var variableName = node.GetText();
-
-                    if (!_variables.ContainsKey(variableName))
-                    {
-                        Console.WriteLine($"Variable '{variableName}' is not defined!");
-                        return null;
-                    }
-
-                    var existingValue = _variables[variableName];
-                    if (existingValue == null && variableValue != null)
-                    {
-                        Console.WriteLine($"Cannot assign non-null value to null variable '{variableName}'");
-                        return null;
-                    }
-
-                    var existingType = existingValue?.GetType();
-                    var valueType = variableValue?.GetType();
-
-                    if (existingType != null && valueType != null && existingType != valueType)
-                    {
-                        Console.WriteLine($"Cannot assign value of type '{valueType.Name}' to variable '{variableName}' of type '{existingType.Name}'");
-                        return null;
-                    }
-
-                    _variables[variableName] = variableValue;
+                    throw new ArgumentNullException();
                 }
-            }
 
+                _variables[variableName] = variableValue;
+            }
             return null;
         }
 
@@ -247,6 +237,12 @@ namespace Interpreter.Grammar
                 default:
                     return null;
             }
+        }
+
+        public override object? VisitIdentifierExpression([NotNull] CodeGrammarParser.IdentifierExpressionContext context)
+        {
+            var variableName = context.IDENTIFIER().GetText();
+            return _variables[variableName];
         }
 
         public override object? VisitType([NotNull] CodeGrammarParser.TypeContext context)

@@ -8,17 +8,18 @@ END_CODE: 'END CODE' ;
 line
     : initialization
 	| variable
-    | assignment
+    | singleAssignment
+    | multipleAssignments
     | ifBlock 
     | whileBlock
     | display
     | scan
     ;
 
-ASSIGN: '=';
-initialization: type IDENTIFIER (',' IDENTIFIER)* (ASSIGN expression)? NEWLINE?;
-variable: type IDENTIFIER (ASSIGN expression)? NEWLINE?;
-assignment: IDENTIFIER ASSIGN expression NEWLINE?;
+initialization: type IDENTIFIER (',' IDENTIFIER)* ('=' expression)? NEWLINE?;
+variable: type IDENTIFIER ('=' expression)? NEWLINE?;
+singleAssignment: IDENTIFIER '=' expression NEWLINE?;
+multipleAssignments: IDENTIFIER ('=' IDENTIFIER)* '=' expression NEWLINE? ;
 
 BEGIN_IF: 'BEGIN IF' ;
 END_IF: 'END IF' ;
