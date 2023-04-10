@@ -424,7 +424,7 @@ namespace Interpreter.Grammar
             }
         }
 
-        public override object VisitAddSubConcatenatorExpression([NotNull] CodeGrammarParser.AddSubConcatenatorExpressionContext context)
+        public override object? VisitAddSubConcatenatorExpression([NotNull] CodeGrammarParser.AddSubConcatenatorExpressionContext context)
         {
             // There are two child nodes, so we need to handle the operator and the operands
             var left = Visit(context.expression(0));
@@ -639,5 +639,37 @@ namespace Interpreter.Grammar
             }
         }
 
+        public override object? VisitLogicalExpression([NotNull] CodeGrammarParser.LogicalExpressionContext context)
+        {
+            var left = Visit(context.expression(0));
+            var right = Visit(context.expression(1));
+            var op = context.logicalOperator().GetText();
+
+            // Check the types of the operands
+            if (left is bool leftBool && right is bool rightBool)
+            {
+                // Both operands are booleans
+                switch (op)
+                {
+                    case "AND":
+                        return leftBool && rightBool;
+                    case "OR":
+                        return leftBool || rightBool;
+                    case "NOT":
+                        return !leftBool;
+                    default:
+                        throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left == null || right == null)
+            {
+                throw new ArgumentNullException("Operand cannot be null.");
+            }
+            else
+            {
+                // Operands are of different types
+                throw new ArgumentException($"Cannot perform operation on operands of different types: {left.GetType().Name} and {right.GetType().Name}");
+            }
+        }
     }
 }
