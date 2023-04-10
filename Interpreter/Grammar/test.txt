@@ -1,6 +1,9 @@
 ﻿BEGIN CODE
-INT w,x,y,z
-w = 1
-x = w
-y=z=2
+INT ab = 23
+FLOAT i = 3.14
+INT d = -5
+CHAR c = 'a'
+BOOL f = "TRUE"
+# GOODS
+DISPLAY: ab $ [[] & c & []] $ f & [#] $ "Hello World" $ i $ [[]] & ab & []] $ d
 END CODE
