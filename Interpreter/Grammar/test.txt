@@ -1,5 +1,6 @@
 ﻿BEGIN CODE
-INT x = 1
-INT y, z = 2
-y = z
+INT w,x,y,z
+w = 1
+x = w
+y=z=2
 END CODE
