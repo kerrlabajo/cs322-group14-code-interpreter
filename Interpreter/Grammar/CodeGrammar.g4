@@ -32,7 +32,7 @@ END_WHILE: 'END WHILE' ;
 whileBlock: WHILE '(' expression ')' NEWLINE BEGIN_WHILE NEWLINE line* NEWLINE END_WHILE ;
 
 DISPLAY: 'DISPLAY:';
-display: NEWLINE? DISPLAY (expression (',' expression)*)? ;
+display: NEWLINE? DISPLAY (expression (concat | NEXTLINE expression)*)? ;
 SCAN: 'SCAN:';
 scan: SCAN IDENTIFIER (',' IDENTIFIER)* ;
 
@@ -64,11 +64,11 @@ expression
     | expression comparisonOperator expression                  #comparisonExpression
     | expression logicalOperator expression                     #logicalExpression
     | expression concat expression                              #concatExpression
-    | expression NEXTLINE expression                            #nextLineExpression
+    | NEXTLINE                                                  #nextLineExpression
     ; 
 
 highPrecedenceOperator: '*' | '/' | '%' ;
-lowPrecedenceOperator: '+' | '-' | '&' ;
+lowPrecedenceOperator: '+' | '-' | '&' | NEXTLINE ;
 comparisonOperator: '==' | '<>' | '>' | '<' | '>=' | '<='  ;
 logicalOperator: 'AND' | 'OR' | 'NOT' ;
 concat: '&' ;
@@ -77,4 +77,4 @@ IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* ;
 COMMENT: '#' ~[\r\n]* NEWLINE -> channel(HIDDEN) ;
 NEXTLINE: '$' ;
 WHITESPACES: [ \t\r]+ -> skip ;
-NEWLINE: '\r'? '\n'| '\r';
+NEWLINE: [\r?\n]+ ;

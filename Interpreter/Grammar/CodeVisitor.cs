@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 
@@ -23,11 +24,7 @@ namespace Interpreter.Grammar
                 {
                     VisitLine(linesContext);
                 }
-                foreach (KeyValuePair<string, object?> kvp in _variables)
-                {
-                    Console.WriteLine("Variable = {0}, Value = {1}", kvp.Key, kvp.Value);
-                }
-                Console.WriteLine("Code is successful");
+                Console.WriteLine("\nCode is successful");
             }
             else if (program.StartsWith("BEGIN CODE") && program.EndsWith("BEGIN CODE"))
             {
@@ -267,34 +264,19 @@ namespace Interpreter.Grammar
 
         public override object? VisitDisplay([NotNull] CodeGrammarParser.DisplayContext context)
         {
-            var varNamesToDisplay = context.expression().Select(x => x.GetText()).ToArray();
-            foreach (var varName in varNamesToDisplay)
+            try
             {
-                foreach (char varChar in varName)
-                {
-                    if (varChar == '$')
-                    {
-                        Console.WriteLine();
-                    }
-                    else if (_variables.TryGetValue(varChar + "", out object? variableValue))
-                    {
-                        if (variableValue is bool boolValue)
-                        {
-                            Console.Write(boolValue ? "TRUE" : "FALSE");
-                        }
-                        else if (variableValue is float floatValue)
-                        {
-                            Console.Write(floatValue.ToString("0.0###############"));
-                        }
-                        else
-                        {
-                            Console.Write(variableValue);
-                        }
-                    }
-                }
-            }
+                var varNamesToDisplay = context.expression().Select(Visit).ToArray();
+                var varValues = string.Join("", varNamesToDisplay.Select(var => var?.ToString()));
+                varValues = varValues.Replace("True", "TRUE");
+                varValues = varValues.Replace("False", "FALSE");
 
-            Console.WriteLine();
+                Console.Write(varValues);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
             return null;
         }
 
@@ -334,6 +316,19 @@ namespace Interpreter.Grammar
         public override object? VisitNegativeExpression(CodeGrammarParser.NegativeExpressionContext context)
         {
             return -(double)Visit(context.expression());
+        }
+
+        public override object? VisitNextLineExpression([NotNull] CodeGrammarParser.NextLineExpressionContext context)
+        {
+            return "\n";
+        }
+
+        public override object? VisitConcatExpression([NotNull] CodeGrammarParser.ConcatExpressionContext context)
+        {
+            var left = Visit(context.expression(0));
+            var right = Visit(context.expression(1));
+
+            return $"{left}{right}";
         }
         public override object? VisitMultDivModExpression([NotNull] CodeGrammarParser.MultDivModExpressionContext context)
         {
@@ -423,7 +418,7 @@ namespace Interpreter.Grammar
             }
         }
 
-        public override object VisitAddSubConcatenatorExpression([NotNull] CodeGrammarParser.AddSubConcatenatorExpressionContext context)
+        public override object? VisitAddSubConcatenatorExpression([NotNull] CodeGrammarParser.AddSubConcatenatorExpressionContext context)
         {
             // There are two child nodes, so we need to handle the operator and the operands
             var left = Visit(context.expression(0));
@@ -447,6 +442,10 @@ namespace Interpreter.Grammar
                 {
                     return leftInt.ToString() + rightInt.ToString();
                 }
+                else if(op == "$")
+                {
+                    return leftInt.ToString() + "\n" + rightInt.ToString();
+                }
                 else
                 {
                     throw new ArgumentException($"Unknown operator: {op}");
@@ -465,7 +464,11 @@ namespace Interpreter.Grammar
                 }
                 else if (op == "&")
                 {
-                    return leftFloat.ToString() + rightFloat.ToString();
+                    return leftFloat.ToString("0.0###############") + rightFloat.ToString("0.0###############");
+                }
+                else if (op == "$")
+                {
+                    return leftFloat.ToString("0.0###############") + "\n" + rightFloat.ToString("0.0###############");
                 }
                 else
                 {
@@ -485,7 +488,11 @@ namespace Interpreter.Grammar
                 }
                 else if (op == "&")
                 {
-                    return leftInt2.ToString() + rightFloat2.ToString();
+                    return leftInt2.ToString() + rightFloat2.ToString("0.0###############");
+                }
+                else if (op == "$")
+                {
+                    return leftInt2.ToString() + "\n" + rightFloat2.ToString("0.0###############");
                 }
                 else
                 {
@@ -505,12 +512,365 @@ namespace Interpreter.Grammar
                 }
                 else if (op == "&")
                 {
-                    return leftFloat2.ToString() + rightInt2.ToString();
+                    return leftFloat2.ToString("0.0###############") + rightInt2.ToString();
                 }
                 else
                 {
                     throw new ArgumentException($"Unknown operator: {op}");
                 }
+            }
+            else if (left is bool leftBool && right is bool rightBool)
+            {
+                if (op == "&")
+                {
+                    return leftBool + "" + rightBool;
+                }
+                else if (op == "$")
+                {
+                    return leftBool + "\n" + rightBool;
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is bool leftBool1 && right is int rightInt3)
+            {
+                if (op == "&")
+                {
+                    return leftBool1 + rightInt3.ToString();
+                }
+                else if (op == "$")
+                {
+                    return leftBool1 + "\n" + rightInt3.ToString();
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is int leftInt3 && right is bool rightBool1)
+            {
+                if (op == "&")
+                {
+                    return leftInt3.ToString() + rightBool1;
+                }
+                else if (op == "$")
+                {
+                    return leftInt3.ToString() + "\n" + rightBool1;
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is bool leftBool2 && right is float rightFloat3)
+            {
+                if (op == "&")
+                {
+                    return leftBool2 + rightFloat3.ToString("0.0###############");
+                }
+                else if (op == "$")
+                {
+                    return leftBool2 + "\n" + rightFloat3.ToString("0.0###############");
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is float leftFloat3 && right is bool rightBool2)
+            {
+                if (op == "&")
+                {
+                    return leftFloat3.ToString("0.0###############") + rightBool2;
+                }
+                else if (op == "$")
+                {
+                    return leftFloat3.ToString("0.0###############") + "\n" + rightBool2;
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is bool leftBool3 && right is char rightChar)
+            {
+                if (op == "&")
+                {
+                    return leftBool3 + "" + rightChar;
+                }
+                else if (op == "$")
+                {
+                    return leftBool3 + "\n" + rightChar;
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is char leftChar && right is bool rightBool3)
+            {
+                if (op == "&")
+                {
+                    return leftChar + "" + rightBool3;
+                }
+                else if (op == "$")
+                {
+                    return leftChar + "\n" + rightBool3;
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if(left is char leftChar1 && right is char rightChar1)
+            {
+                if (op == "&")
+                {
+                    return leftChar1.ToString() + rightChar1;
+                }
+                else if(op == "$")
+                {
+                    return leftChar1.ToString() + "\n" + rightChar1;
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if(left is char leftChar2 && right is int rightInt4)
+            {
+                if (op == "&")
+                {
+                    return leftChar2 + rightInt4.ToString();
+                }
+                else if (op == "$")
+                {
+                    return leftChar2 + "\n" + rightInt4.ToString();
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is int leftInt4 && right is char rightChar2)
+            {
+                if (op == "&")
+                {
+                    return leftInt4.ToString() + rightChar2;
+                }
+                else if (op == "$")
+                {
+                    return leftInt4.ToString() + "\n" + rightChar2;
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is char leftChar3 && right is float rightFloat4)
+            {
+                if (op == "&")
+                {
+                    return leftChar3.ToString() + rightFloat4.ToString("0.0###############");
+                }
+                else if (op == "$")
+                {
+                    return leftChar3.ToString() + "\n" + rightFloat4.ToString("0.0###############");
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is float leftFloat4 && right is char rightChar3)
+            {
+                if (op == "&")
+                {
+                    return leftFloat4.ToString("0.0###############") + rightChar3;
+                }
+                else if (op == "$")
+                {
+                    return leftFloat4.ToString("0.0###############") + "\n" + rightChar3;
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is string leftString && right is string rightString)
+            {
+                if (op == "&")
+                {
+                    return leftString + rightString;
+                }
+                else if (op == "$")
+                {
+                    return leftString + "\n" + rightString;
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is string leftString1 && right is int rightInt5)
+            {
+                if (op == "&")
+                {
+                    return leftString1 + rightInt5;
+                }
+                else if (op == "$")
+                {
+                    return leftString1 + "\n" + rightInt5;
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is int leftInt5 && right is string rightString1)
+            {
+                if (op == "&")
+                {
+                    return leftInt5 + rightString1;
+                }
+                else if (op == "$")
+                {
+                    return leftInt5 + "\n" + rightString1;
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is string leftString2 && right is float rightFloat5)
+            {
+                if (op == "&")
+                {
+                    return leftString2 + rightFloat5.ToString("0.0###############");
+                }
+                else if (op == "$")
+                {
+                    return leftString2 + "\n" + rightFloat5.ToString("0.0###############");
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is float leftFloat5 && right is string rightString2)
+            {
+                if (op == "&")
+                {
+                    return leftFloat5.ToString("0.0###############") + rightString2;
+                }
+                else if (op == "$")
+                {
+                    return leftFloat5.ToString("0.0###############") + "\n" + rightString2;
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is string leftString3 && right is char rightChar4)
+            {
+                if (op == "&")
+                {
+                    return leftString3 + rightChar4;
+                }
+                else if (op == "$")
+                {
+                    return leftString3 + "\n" + rightChar4;
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is char leftChar4 && right is string rightString3)
+            {
+                if (op == "&")
+                {
+                    return leftChar4 + rightString3;
+                }
+                else if (op == "$")
+                {
+                    return leftChar4 + "\n" + rightString3;
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is string leftString4 && right is bool rightBool4)
+            {
+                if (op == "&")
+                {
+                    return leftString4 + rightBool4;
+                }
+                else if (op == "$")
+                {
+                    return leftString4 + "\n" + rightBool4;
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is bool leftBool4 && right is string rightString4)
+            {
+                if (op == "&")
+                {
+                    return leftBool4 + rightString4;
+                }
+                else if (op == "$")
+                {
+                    return leftBool4 + "\n" + rightString4;
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if(right == null && op == "$")
+            {
+                switch (left)
+                {
+                    case int leftInt6:
+                        return leftInt6.ToString() + "\n";
+                    case float leftFloat6:
+                        return leftFloat6.ToString("0.0###############") + "\n";
+                    case char leftChar6:
+                        return leftChar6 + "\n";
+                    case string leftString5:
+                        return leftString5.ToString() + "\n";
+                    case bool leftBool5:
+                        return leftBool5 + "\n";
+                    default:
+                        break;
+                }
+                return null;
+            }
+            else if (left == null && op == "$")
+            {
+                switch (right)
+                {
+                    case int rightInt6:
+                        return rightInt6.ToString() + "\n";
+                    case float rightFloat6:
+                        return rightFloat6.ToString("0.0###############") + "\n";
+                    case char rightChar6:
+                        return rightChar6 + "\n";
+                    case string rightString5:
+                        return rightString5.ToString() + "\n";
+                    case bool rightBool5:
+                        return rightBool5 + "\n";
+                    default:
+                        break;
+                }
+                return null;
             }
             else if (left == null || right == null)
             {

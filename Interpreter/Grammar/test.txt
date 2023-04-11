@@ -1,6 +1,12 @@
 ﻿BEGIN CODE
-INT w,x,y,z
-w = 1
-x = w
-y=z=2
+INT x, y, z=5 
+CHAR a_1='n' 
+BOOL t="TRUE"
+# GOODS
+x=4
+y=4
+# NOT GOODS -> x=y=4
+a_1='c'
+# this is a comment
+DISPLAY: x & t & z & $ & a_1 & [#] & "last"
 END CODE
