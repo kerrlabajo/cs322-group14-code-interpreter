@@ -335,6 +335,13 @@ namespace Interpreter.Grammar
         {
             return -(double)Visit(context.expression());
         }
+
+        public override object? VisitParenthesisExpression([NotNull] CodeGrammarParser.ParenthesisExpressionContext context)
+        {
+            // Visit the inner expression and return its result
+            return Visit(context.expression());
+        }
+
         public override object? VisitMultDivModExpression([NotNull] CodeGrammarParser.MultDivModExpressionContext context)
         {
             if (context.children.Count == 1)
@@ -423,7 +430,7 @@ namespace Interpreter.Grammar
             }
         }
 
-        public override object VisitAddSubConcatenatorExpression([NotNull] CodeGrammarParser.AddSubConcatenatorExpressionContext context)
+        public override object? VisitAddSubConcatenatorExpression([NotNull] CodeGrammarParser.AddSubConcatenatorExpressionContext context)
         {
             // There are two child nodes, so we need to handle the operator and the operands
             var left = Visit(context.expression(0));
@@ -510,6 +517,154 @@ namespace Interpreter.Grammar
                 else
                 {
                     throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left == null || right == null)
+            {
+                throw new ArgumentNullException("Operand cannot be null.");
+            }
+            else
+            {
+                // Operands are of different types
+                throw new ArgumentException($"Cannot perform operation on operands of different types: {left.GetType().Name} and {right.GetType().Name}");
+            }
+        }
+
+        public override object? VisitComparisonExpression(CodeGrammarParser.ComparisonExpressionContext context)
+        {
+            var left = Visit(context.expression(0));
+            var right = Visit(context.expression(1));
+            var op = context.comparisonOperator().GetText();
+
+            // Check the types of the operands
+            if (left is int leftInt && right is int rightInt)
+            {
+                // Both operands are integers
+                switch (op)
+                {
+                    case "==":
+                        return leftInt == rightInt;
+                    case "<>":
+                        return leftInt != rightInt;
+                    case ">":
+                        return leftInt > rightInt;
+                    case "<":
+                        return leftInt < rightInt;
+                    case ">=":
+                        return leftInt >= rightInt;
+                    case "<=":
+                        return leftInt <= rightInt;
+                    default:
+                        throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is float leftFloat && right is float rightFloat)
+            {
+                // Both operands are floats
+                switch (op)
+                {
+                    case "==":
+                        return leftFloat == rightFloat;
+                    case "<>":
+                        return leftFloat != rightFloat;
+                    case ">":
+                        return leftFloat > rightFloat;
+                    case "<":
+                        return leftFloat < rightFloat;
+                    case ">=":
+                        return leftFloat >= rightFloat;
+                    case "<=":
+                        return leftFloat <= rightFloat;
+                    default:
+                        throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is int leftInt2 && right is float rightFloat2)
+            {
+                // One operand is an integer and the other is a float
+                switch (op)
+                {
+                    case "==":
+                        return leftInt2 == rightFloat2;
+                    case "<>":
+                        return leftInt2 != rightFloat2;
+                    case ">":
+                        return leftInt2 > rightFloat2;
+                    case "<":
+                        return leftInt2 < rightFloat2;
+                    case ">=":
+                        return leftInt2 >= rightFloat2;
+                    case "<=":
+                        return leftInt2 <= rightFloat2;
+                    default:
+                        throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is float leftFloat2 && right is int rightInt2)
+            {
+                // One operand is a float and the other is an integer
+                switch (op)
+                {
+                    case "==":
+                        return leftFloat2 == rightInt2;
+                    case "<>":
+                        return leftFloat2 != rightInt2;
+                    case ">":
+                        return leftFloat2 > rightInt2;
+                    case "<":
+                        return leftFloat2 < rightInt2;
+                    case ">=":
+                        return leftFloat2 >= rightInt2;
+                    case "<=":
+                        return leftFloat2 <= rightInt2;
+                    default:
+                        throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
+            else if (left is bool leftBool && right is bool rightBool)
+            {
+                // Both operands are booleans
+                switch (op)
+                {
+                    case "==":
+                        return leftBool == rightBool;
+                    case "<>":
+                        return leftBool != rightBool;
+                    default:
+                        throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }           
+            else if (left == null || right == null)
+            {
+                throw new ArgumentNullException("Operand cannot be null.");
+            }
+            else
+            {
+                // Operands are of different types
+                throw new ArgumentException($"Cannot perform operation on operands of different types: {left.GetType().Name} and {right.GetType().Name}");
+            }
+        }
+
+        public override object? VisitLogicalExpression([NotNull] CodeGrammarParser.LogicalExpressionContext context)
+        {
+            var left = Visit(context.expression(0));
+            var right = Visit(context.expression(1));
+            var op = context.logicalOperator().GetText();
+
+            // Check the types of the operands
+            if (left is bool leftBool && right is bool rightBool)
+            {
+                // Both operands are booleans
+                switch (op)
+                {
+                    case "AND":
+                        return leftBool && rightBool;
+                    case "OR":
+                        return leftBool || rightBool;
+                    case "NOT":
+                        return !leftBool;
+                    default:
+                        throw new ArgumentException($"Unknown operator: {op}");
                 }
             }
             else if (left == null || right == null)
