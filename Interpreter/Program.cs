@@ -8,6 +8,8 @@ var inputStream = new AntlrInputStream(text);
 var speakLexer = new CodeGrammarLexer(inputStream);
 var commonTokenStream = new CommonTokenStream(speakLexer);
 var speakParser = new CodeGrammarParser(commonTokenStream);
+var errorListener = new ErrorListener(); // replace MyErrorListener with the name of your error listener class
+speakParser.AddErrorListener(errorListener);
 var chatContext = speakParser.program();
 var visitor = new CodeVisitor();
 visitor.Visit(chatContext);

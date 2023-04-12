@@ -1,6 +1,6 @@
 ﻿grammar CodeGrammar;
 
-program: NEWLINE? BEGIN_CODE NEWLINE line* NEWLINE END_CODE NEWLINE?;
+program: NEWLINE? BEGIN_CODE NEWLINE? line* NEWLINE? END_CODE EOF;
 
 BEGIN_CODE: 'BEGIN CODE' ;
 END_CODE: 'END CODE' ;
@@ -19,7 +19,9 @@ line
 initialization: type IDENTIFIER (',' IDENTIFIER)* ('=' expression)? NEWLINE?;
 variable: type IDENTIFIER ('=' expression)? NEWLINE?;
 singleAssignment: IDENTIFIER '=' expression NEWLINE?;
-multipleAssignments: IDENTIFIER ('=' IDENTIFIER)* '=' expression NEWLINE? ;
+multipleAssignments: IDENTIFIER ('=' IDENTIFIER)* '=' expression NEWLINE? 
+                   | IDENTIFIER ('=' IDENTIFIER)* '=' expression (',' singleAssignment)* NEWLINE?
+                   ;
 
 BEGIN_IF: 'BEGIN IF' ;
 END_IF: 'END IF' ;

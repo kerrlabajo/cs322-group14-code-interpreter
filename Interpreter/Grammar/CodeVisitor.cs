@@ -15,7 +15,7 @@ namespace Interpreter.Grammar
     {
         public Dictionary<string, object?> _variables { get; } = new Dictionary<string, object?>();
 
-        public override object? VisitProgram([NotNull] CodeGrammarParser.ProgramContext context)
+        /*public override object? VisitProgram([NotNull] CodeGrammarParser.ProgramContext context)
         {
             string program = context.GetText().Trim();
             if (program.StartsWith("BEGIN CODE") && program.EndsWith("END CODE"))
@@ -80,7 +80,7 @@ namespace Interpreter.Grammar
             {
                 throw new Exception("Syntax Error");
             }
-        }
+        }*/
 
         public override object? VisitInitialization([NotNull] CodeGrammarParser.InitializationContext context)
         {
