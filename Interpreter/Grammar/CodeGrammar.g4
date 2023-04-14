@@ -36,7 +36,7 @@ END_WHILE: 'END WHILE' ;
 whileBlock: WHILE '(' expression ')' NEWLINE BEGIN_WHILE NEWLINE line* NEWLINE END_WHILE ;
 
 DISPLAY: 'DISPLAY:';
-display: NEWLINE? DISPLAY (expression (concat | NEXTLINE expression)*)? ;
+display: NEWLINE DISPLAY (expression (concat | NEXTLINE expression)*)? ;
 SCAN: 'SCAN:';
 scan: SCAN IDENTIFIER (',' IDENTIFIER)* ;
 

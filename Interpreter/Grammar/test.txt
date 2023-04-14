@@ -1,23 +1,4 @@
-﻿#comment
-#comment
-#comment
-BEGIN CODE #comments
-#comment
-#comment
-#comment
-INT xyz =5, abc=100 #comment
-#comment
-#comment
-#comment
-xyz= ((abc *5)/10 + 10) * -1 #comment
-#comment
-#comment
-#comment
-DISPLAY: [[] & xyz & []] #comment
-#comment
-#comment
-#comment
+﻿BEGIN CODE
+INT xyz =5, abc=100 
+xyz= ((abc *5)/10 + 10) * -1 DISPLAY: [[] & xyz & []] 
 END CODE
-#comment
-#comment
-#comment
