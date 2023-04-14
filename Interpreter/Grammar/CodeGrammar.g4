@@ -17,7 +17,9 @@ line
     ;
 
 initialization: type IDENTIFIER (',' IDENTIFIER)* ('=' expression)? NEWLINE?;
-variable: type IDENTIFIER ('=' expression)? NEWLINE?;
+variable: type IDENTIFIER (EQUALS expression)? NEWLINE?
+        | type IDENTIFIER (EQUALS expression)? (',' IDENTIFIER (EQUALS expression)?)* NEWLINE?
+        ;
 singleAssignment: IDENTIFIER '=' expression NEWLINE?;
 multipleAssignments: IDENTIFIER ('=' IDENTIFIER)* '=' expression NEWLINE? 
                    | IDENTIFIER ('=' IDENTIFIER)* '=' expression (',' singleAssignment)* NEWLINE?
@@ -75,6 +77,7 @@ comparisonOperator: '==' | '<>' | '>' | '<' | '>=' | '<='  ;
 logicalOperator: 'AND' | 'OR' | 'NOT' ;
 concat: '&' ;
 
+EQUALS: '=';
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* ;
 COMMENT: '#' ~[\r\n]* NEWLINE -> channel(HIDDEN) ;
 NEXTLINE: '$' ;

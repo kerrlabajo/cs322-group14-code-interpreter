@@ -1,19 +1,25 @@
-﻿//GOODS
+﻿//GOOD
 1. Single and multiple declarations
 INT x
 INT y,z
 DISPLAY: x $ y $ z
 
-//GOODS
+//GOOD
 2. Single and multiple initializations
 INT x = 1
 INT y = 2, z = 3
 DISPLAY: x $ y $ z	
 
-//GOODS
+//GOOD
 3. Assigning value
 INT w,x,y,z
 w = 1
 x = w
 y=z=2
 DISPLAY: w $ x $ y $ z	
+
+//GOOD
+4. Assigning value (Error)
+INT x
+x = 4 = 4
+DISPLAY: x

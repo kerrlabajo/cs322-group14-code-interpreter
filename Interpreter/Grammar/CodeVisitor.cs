@@ -15,73 +15,6 @@ namespace Interpreter.Grammar
     {
         public Dictionary<string, object?> _variables { get; } = new Dictionary<string, object?>();
 
-        /*public override object? VisitProgram([NotNull] CodeGrammarParser.ProgramContext context)
-        {
-            string program = context.GetText().Trim();
-            if (program.StartsWith("BEGIN CODE") && program.EndsWith("END CODE"))
-            {
-                foreach (var linesContext in context.line())
-                {
-                    VisitLine(linesContext);
-                }
-                Console.WriteLine("\nCode is successful");
-            }
-            else if (program.StartsWith("BEGIN CODE") && program.EndsWith("BEGIN CODE"))
-            {
-                Console.WriteLine("Code is missing END CODE");
-            }
-
-            else if (program.EndsWith("END CODE"))
-            {
-                Console.WriteLine("Code is missing BEGIN CODE");
-            }
-            else
-            {
-                Console.WriteLine("Code does not contain BEGIN CODE and END CODE");
-            }
-            return null;
-        }
-
-        public override object? VisitLine([NotNull] CodeGrammarParser.LineContext context)
-        {
-            if (context.initialization() != null)
-            {
-                return VisitInitialization(context.initialization());
-            }
-            else if (context.variable() != null)
-            {
-                return VisitVariable(context.variable());
-            }
-            else if (context.singleAssignment() != null)
-            {
-                return VisitSingleAssignment(context.singleAssignment());
-            }
-            else if (context.multipleAssignments() != null)
-            {
-                return VisitMultipleAssignments(context.multipleAssignments());
-            }
-            else if (context.ifBlock() != null)
-            {
-                return VisitIfBlock(context.ifBlock());
-            }
-            else if (context.whileBlock() != null)
-            {
-                return VisitWhileBlock(context.whileBlock());
-            }
-            else if (context.display() != null)
-            {
-                return VisitDisplay(context.display());
-            }
-            else if (context.scan() != null)
-            {
-                return VisitScan(context.scan());
-            }
-            else
-            {
-                throw new Exception("Syntax Error");
-            }
-        }*/
-
         public override object? VisitInitialization([NotNull] CodeGrammarParser.InitializationContext context)
         {
             // Map string type names to corresponding Type objects
@@ -140,42 +73,18 @@ namespace Interpreter.Grammar
 
         public override object? VisitVariable([NotNull] CodeGrammarParser.VariableContext context)
         {
-            var dataTypeObj = VisitType(context.type());
-            if (dataTypeObj is not Type dataType)
+            var type = VisitType(context.type());
+
+            // Loop over all the identifiers and add them to the dictionary
+            for (int i = 0; i < context.IDENTIFIER().Length; i++)
             {
-                throw new ArgumentException("Invalid data type");
+                var identifier = context.IDENTIFIER(i).GetText();
+                var expression = context.expression(i) != null ? Visit(context.expression(i)) : null;
+                var variable = expression != null ? expression : null;
+                _variables[identifier] = variable;
             }
 
-            var variableName = context.IDENTIFIER().GetText();
-            var variableValue = VisitExpression(context.expression());
-
-            if (variableValue is null)
-            {
-                if (dataType.IsValueType)
-                {
-                    throw new ArgumentException("Cannot assign null to value type");
-                }
-
-                _variables[variableName] = null;
-                return null;
-            }
-
-            if (dataType.IsAssignableFrom(variableValue.GetType()))
-            {
-                _variables[variableName] = variableValue;
-                return variableValue;
-            }
-
-            try
-            {
-                var convertedValue = Convert.ChangeType(variableValue, dataType);
-                _variables[variableName] = convertedValue;
-                return convertedValue;
-            }
-            catch (Exception)
-            {
-                throw new ArgumentException($"Cannot convert value '{variableValue}' to type '{dataType.Name}'");
-            }
+            return null;
         }
 
         public override object? VisitSingleAssignment([NotNull] CodeGrammarParser.SingleAssignmentContext context)
