@@ -46,7 +46,7 @@ namespace Interpreter.Grammar
             {
                 if (_variables.ContainsKey(varName))
                 {
-                    Console.WriteLine($"Variable '{varName}' is already defined!");
+                    throw new ArgumentException($"Variable '{varName}' is already defined!");
                     continue;
                 }
 
