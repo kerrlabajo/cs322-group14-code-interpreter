@@ -1,11 +1,23 @@
-﻿BEGIN CODE
-INT x = 10, y = 20, z = 30
-CHAR a = 'a', b = 'b', c = 'c'
-BOOL t1 = "TRUE", t2 = "FALSE", t3 = "TRUE"
-FLOAT f1 = 3.14, f2 = 2.71828, f3 = 1.61803
-x = y = z = 0
-a = b = c = 'd'
-t1 = t2 = t3 = "FALSE"
-f1 = f2 = f3 = 0.0
-DISPLAY: x $ y $ z $ a $ b $ c $ t1 $ t2 $ t3 $ f1 $ f2 $ f3
+﻿#comment
+#comment
+#comment
+BEGIN CODE #comments
+#comment
+#comment
+#comment
+INT xyz =5, abc=100 #comment
+#comment
+#comment
+#comment
+xyz= ((abc *5)/10 + 10) * -1 #comment
+#comment
+#comment
+#comment
+DISPLAY: [[] & xyz & []] #comment
+#comment
+#comment
+#comment
 END CODE
+#comment
+#comment
+#comment
