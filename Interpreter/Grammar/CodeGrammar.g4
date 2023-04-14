@@ -38,7 +38,7 @@ whileBlock: WHILE '(' expression ')' NEWLINE BEGIN_WHILE NEWLINE line* NEWLINE E
 DISPLAY: 'DISPLAY:';
 display: NEWLINE DISPLAY (expression (concat | NEXTLINE expression)*)? ;
 SCAN: 'SCAN:';
-scan: SCAN IDENTIFIER (',' IDENTIFIER)* ;
+scan: NEWLINE SCAN IDENTIFIER (',' IDENTIFIER)* ;
 
 type: INT | FLOAT | BOOL | CHAR ;
 INT: 'INT' ;

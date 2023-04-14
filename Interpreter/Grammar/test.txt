@@ -1,6 +1,3 @@
 ﻿BEGIN CODE
-INT xyz =5, abc=100
-xyz= ((abc *5)/10 + 10) * -1
-INT xyz =2
-DISPLAY: [[] & xyz & []]            
+DISPLAY: "TRUE" == "FALSE" & " " & "True One" 
 END CODE

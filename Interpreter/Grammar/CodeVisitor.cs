@@ -81,11 +81,19 @@ namespace Interpreter.Grammar
                 var identifier = context.IDENTIFIER(i).GetText();
                 var expression = context.expression(i) != null ? Visit(context.expression(i)) : null;
                 var variable = expression != null ? expression : null;
+
+                // Throw an exception if variable is declared without initialization value
+                if (variable == null)
+                {
+                    throw new Exception($"Variable {identifier} is declared without an initialization value.");
+                }
+
                 _variables[identifier] = variable;
             }
 
             return null;
         }
+
 
         public override object? VisitSingleAssignment([NotNull] CodeGrammarParser.SingleAssignmentContext context)
         {
