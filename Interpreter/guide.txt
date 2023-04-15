@@ -5,12 +5,14 @@ xyz= ((abc *5)/10 + 10) * -1
 DISPLAY: [[] & xyz & []]
 END CODE
 
+//GOOD
 BEGIN CODE
 INT xyz = 1, abc=100
 # xyz= ((abc *5)/10 + 10) * -1
 DISPLAY: [[] & xyz & []]
 END CODE
 
+//GOOD
 # asdasdasd
 BEGIN CODE
 INT xyz = 1, abc=100
@@ -18,6 +20,7 @@ INT xyz = 1, abc=100
 DISPLAY: [[] & xyz & []]
 END CODE
 
+//GOOD
 # asdasdasd
 BEGIN CODE
 INT xyz = 1, abc=100
@@ -26,6 +29,7 @@ FLOAT f = 5.1
 DISPLAY: [[] & xyz & f & []]
 END CODE
 
+//GOOD
 # asdasdasd
 BEGIN 
 INT xyz = 1, abc=100
@@ -34,10 +38,12 @@ FLOAT f = 5.1
 DISPLAY: [[] & xyz & f & []]
 END CODE
 
+//GOOD
 # asdasdasd
 BEGIN CODE
 END CODE
 
+//GOOD
 # asdasdasd
 BEGIN CODE
 END CODE
