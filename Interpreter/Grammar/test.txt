@@ -1,3 +1,5 @@
 ﻿BEGIN CODE
-DISPLAY: "TRUE" == "FALSE" & " " & "True One" 
+INT xyz, abc=100
+xyz= ((abc *5)/10 + 10) * -1
+DISPLAY: [[] & xyz & []]
 END CODE
