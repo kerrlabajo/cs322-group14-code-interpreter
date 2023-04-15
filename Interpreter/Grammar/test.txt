@@ -1,7 +1,15 @@
 ﻿BEGIN CODE
-INT x = 10
+INT x = 3
 IF (x > 5)
 BEGIN IF
-DISPLAY: x & " is greater than 5"
+DISPLAY: "x is greater than 5"
+END IF
+ELSE IF (x > 2)
+BEGIN IF
+DISPLAY: "x is greater than 2 but less than or equal to 5"
+END IF
+ELSE
+BEGIN IF
+DISPLAY: "x is less than or equal to 2"
 END IF
 END CODE

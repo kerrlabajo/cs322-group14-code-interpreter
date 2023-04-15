@@ -981,5 +981,44 @@ namespace Interpreter.Grammar
 
             return null;
         }
+
+        public override object? VisitElseIfBlock([NotNull] CodeGrammarParser.ElseIfBlockContext context)
+        {
+            // Evaluate the condition of the else if block
+            bool condition = (bool)Visit(context.expression());
+
+            // If the condition is true, execute the code inside the else if block
+            if (condition)
+            {
+                // Visit all the lines of code inside the else if block
+                foreach (var lineContext in context.line())
+                {
+                    Visit(lineContext);
+                }
+            }
+            // If there's another else if block, evaluate its condition and execute its code if it's true
+            else if (context.elseIfBlock() != null)
+            {
+                return Visit(context.elseIfBlock());
+            }
+            // If there's an else block, execute its code
+            else if (context.elseBlock() != null)
+            {
+                Visit(context.elseBlock());
+            }
+
+            return null;
+        }
+
+        public override object? VisitElseBlock([NotNull] CodeGrammarParser.ElseBlockContext context)
+        {
+            // Visit all the lines of code inside the else block
+            foreach (var lineContext in context.line())
+            {
+                Visit(lineContext);
+            }
+
+            return null;
+        }
     }
 }
