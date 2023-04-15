@@ -1,15 +1,16 @@
 ﻿BEGIN CODE
-INT x = 3
-IF (x > 5)
+INT a=100, b=200, c=300 
+BOOL d="TRUE"
+IF (a == 100)
 BEGIN IF
-DISPLAY: "x is greater than 5"
+	DISPLAY: a
 END IF
-ELSE IF (x > 2)
+ELSE IF (b == 201)
 BEGIN IF
-DISPLAY: "x is greater than 2 but less than or equal to 5"
+	DISPLAY: b
 END IF
 ELSE
 BEGIN IF
-DISPLAY: "x is less than or equal to 2"
+	DISPLAY: c
 END IF
 END CODE
