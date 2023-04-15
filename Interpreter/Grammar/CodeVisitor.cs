@@ -953,5 +953,33 @@ namespace Interpreter.Grammar
                 throw new ArgumentException($"Cannot perform operation on operands of different types: {left.GetType().Name} and {right.GetType().Name}");
             }
         }
+
+        public override object? VisitIfBlock([NotNull] CodeGrammarParser.IfBlockContext context)
+        {
+            // Evaluate the expression inside the if statement
+            bool condition = (bool)Visit(context.expression());
+
+            // If the condition is true, execute the code inside the if block
+            if (condition)
+            {
+                // Visit all the lines of code inside the if block
+                foreach (var lineContext in context.line())
+                {
+                    Visit(lineContext);
+                }
+            }
+            // If there's an else if block, evaluate its condition and execute its code if it's true
+            else if (context.elseIfBlock() != null)
+            {
+                return Visit(context.elseIfBlock());
+            }
+            // If there's an else block, execute its code
+            else if (context.elseBlock() != null)
+            {
+                Visit(context.elseBlock());
+            }
+
+            return null;
+        }
     }
 }
