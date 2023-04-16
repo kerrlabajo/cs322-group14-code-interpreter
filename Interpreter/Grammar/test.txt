@@ -1,16 +1,26 @@
 ﻿BEGIN CODE
-INT a=100, b=200, c=300 
-BOOL d="TRUE"
-IF (a == 100)
+INT p = 20, q = 30, r = 40
+IF (p > q)
 BEGIN IF
-	DISPLAY: a
+    IF (q > r)
+    BEGIN IF
+        DISPLAY: "p is greater than q and q is greater than r"
+    END IF
+    ELSE IF (r > p)
+    BEGIN IF
+        DISPLAY: "r is greater than p and q is less than r"
+    END IF
+    ELSE
+    BEGIN IF
+        DISPLAY: "r is equal to p and q is less than r"
+    END IF
 END IF
-ELSE IF (b == 201)
+ELSE IF (q > r)
 BEGIN IF
-	DISPLAY: b
+    DISPLAY: "q is greater than r and p is less than q"
 END IF
 ELSE
 BEGIN IF
-	DISPLAY: c
+    DISPLAY: "p is less than q and q is less than r"
 END IF
 END CODE

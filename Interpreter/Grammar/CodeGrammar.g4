@@ -10,10 +10,12 @@ line
 	| variable
     | singleAssignment
     | multipleAssignments
-    | ifBlock 
     | whileBlock
     | display
     | scan
+    | ifBlock
+    | elseIfBlock
+    | elseBlock
     ;
 
 initialization: type IDENTIFIER (',' IDENTIFIER)* ('=' expression)? NEWLINE?;
@@ -27,9 +29,9 @@ multipleAssignments: IDENTIFIER ('=' IDENTIFIER)* '=' expression NEWLINE?
 
 BEGIN_IF: 'BEGIN IF' ;
 END_IF: 'END IF' ;
-ifBlock: 'IF' '('expression')' NEWLINE BEGIN_IF NEWLINE line* NEWLINE END_IF NEWLINE (elseBlock | elseIfBlock)? ;
-elseIfBlock: 'ELSE IF' '('expression')' NEWLINE BEGIN_IF NEWLINE line* NEWLINE END_IF NEWLINE (elseBlock | elseIfBlock)? ;
-elseBlock: 'ELSE' NEWLINE BEGIN_IF NEWLINE line* NEWLINE END_IF NEWLINE;
+ifBlock: 'IF' '('expression')' NEWLINE BEGIN_IF NEWLINE line* NEWLINE END_IF NEWLINE? (elseBlock | elseIfBlock)? ;
+elseIfBlock: 'ELSE IF' '('expression')' NEWLINE BEGIN_IF NEWLINE line* NEWLINE END_IF NEWLINE? (elseBlock | elseIfBlock)? ;
+elseBlock: 'ELSE' NEWLINE BEGIN_IF NEWLINE line* NEWLINE END_IF NEWLINE?;
 
 WHILE: 'WHILE' ;
 BEGIN_WHILE: 'BEGIN WHILE' ;
