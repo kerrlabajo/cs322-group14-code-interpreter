@@ -1,18 +1,18 @@
-﻿//GOOD
+﻿//GOOD [-60]
 BEGIN CODE
 INT xyz, abc=100
 xyz= ((abc *5)/10 + 10) * -1
 DISPLAY: [[] & xyz & []]
 END CODE
 
-//GOOD
+//GOOD [1]
 BEGIN CODE
 INT xyz = 1, abc=100
 # xyz= ((abc *5)/10 + 10) * -1
 DISPLAY: [[] & xyz & []]
 END CODE
 
-//GOOD
+//GOOD [1]
 # asdasdasd
 BEGIN CODE
 INT xyz = 1, abc=100
@@ -20,7 +20,7 @@ INT xyz = 1, abc=100
 DISPLAY: [[] & xyz & []]
 END CODE
 
-//GOOD
+//GOOD [15.1]
 # asdasdasd
 BEGIN CODE
 INT xyz = 1, abc=100
@@ -29,7 +29,7 @@ FLOAT f = 5.1
 DISPLAY: [[] & xyz & f & []]
 END CODE
 
-//GOOD
+//GOOD ERROR
 # asdasdasd
 BEGIN 
 INT xyz = 1, abc=100
@@ -43,14 +43,14 @@ END CODE
 BEGIN CODE
 END CODE
 
-//GOOD
+//GOOD ERROR
 # asdasdasd
 BEGIN CODE
 END CODE
 BEGIN CODE
 END CODE
 
-//GOOD
+//GOOD TRUE
 BEGIN CODE
 INT a=100, b=200, c=300 
 BOOL d="FALSE"
@@ -58,7 +58,7 @@ d = (a < b AND c <>200)
 DISPLAY: d
 END CODE
 
-//GOOD
+//GOOD TRUE
 BEGIN CODE
 INT a=100, b=200, c=300 
 BOOL d="FALSE"
@@ -66,7 +66,7 @@ d = (a < b)
 DISPLAY: d
 END CODE
 
-//GOOD
+//GOOD FALSE
 BEGIN CODE
 INT a=100, b=200, c=300 
 BOOL d="TRUE"
@@ -74,7 +74,7 @@ d = (a < b AND c == 200)
 DISPLAY: d
 END CODE
 
-//GOOD
+//GOOD 100
 BEGIN CODE
 INT a=100, b=200, c=300 
 BOOL d="TRUE"
@@ -94,7 +94,7 @@ BEGIN IF
 END IF
 END CODE
 
-//GOOD
+//GOOD ERROR
 BEGIN CODE
 INT a=100, b=200, c=300 
 BOOL d="TRUE"
@@ -104,7 +104,7 @@ BEGIN IF
 END IF
 END CODE
 
-//GOOD
+//GOOD ERROR
 BEGIN CODE
 INT a=100, b=200, c=300 
 BOOL d="TRUE"
@@ -112,7 +112,7 @@ IF (a == 101)
 	DISPLAY: a
 END CODE
 
-//GOOD
+//GOOD 200
 BEGIN CODE
 INT a=100, b=200, c=300 
 BOOL d="TRUE"
@@ -126,7 +126,7 @@ BEGIN IF
 END IF
 END CODE
 
-//GOOD
+//GOOD 200
 BEGIN CODE
 INT a=100, b=200, c=300 
 BOOL d="TRUE"
@@ -144,7 +144,7 @@ BEGIN IF
 END IF
 END CODE
 
-//GOOD
+//GOOD 300
 BEGIN CODE
 INT a=100, b=200, c=300 
 BOOL d="TRUE"
@@ -162,7 +162,7 @@ BEGIN IF
 END IF
 END CODE
 
-//GOOD
+//GOOD 100
 BEGIN CODE
 INT a=100, b=200, c=300 
 BOOL d="TRUE"
@@ -181,6 +181,11 @@ END IF
 END CODE
 
 //GOOD
+//0
+//1
+//2
+//3
+//4
 BEGIN CODE
 INT a=100, b=200, c=300, x=0 
 BOOL d="TRUE"
@@ -202,7 +207,7 @@ BEGIN IF
 END IF
 END CODE
 
-//GOOD
+//GOOD INFINITE LOOP ERROR
 BEGIN CODE
 INT a=100, b=200, c=300, x=0 
 BOOL d="TRUE"
@@ -215,7 +220,7 @@ BEGIN WHILE
 END WHILE
 END CODE
 
-//GOOD
+//GOOD INFINITE LOOP ERROR
 BEGIN CODE
 INT a=100, b=200, c=300, x=0 
 BOOL d="TRUE"
@@ -229,7 +234,7 @@ BEGIN WHILE
 END WHILE
 END CODE
 
-//GOOD
+//GOOD 024
 BEGIN CODE
 INT a=100, b=200, c=300, x=0 
 BOOL d="TRUE"
@@ -243,7 +248,7 @@ BEGIN WHILE
 END WHILE
 END CODE
 
-//GOOD
+//GOOD 13
 BEGIN CODE
 INT a=100, b=200, c=300, x=0 
 BOOL d="TRUE"
@@ -257,7 +262,8 @@ BEGIN WHILE
 END WHILE
 END CODE
 
-//GOOD
+//GOOD 1 * 1 = 11 * 2 = 21 * 3 = 31 * 4 = 41 * 5 = 52 * 1 = 22 * 2 = 42 * 3 = 62 * 4 = 82 * 5 = 103 * 1 = 33 * 2 = 63 * 3 = 93 * 4 = 123 * 5 = 15
+//4 * 1 = 44 * 2 = 84 * 3 = 124 * 4 = 164 * 5 = 20
 BEGIN CODE
 INT a=100, b=200, c=300, x=1, y
 BOOL d="TRUE"
@@ -274,6 +280,26 @@ END WHILE
 END CODE
 
 //GOOD
+//1 * 1 = 1
+//1 * 2 = 2
+//1 * 3 = 3
+//1 * 4 = 4
+//1 * 5 = 5
+//2 * 1 = 2
+//2 * 2 = 4
+//2 * 3 = 6
+//2 * 4 = 8
+//2 * 5 = 10
+//3 * 1 = 3
+//3 * 2 = 6
+//3 * 3 = 9
+//3 * 4 = 12
+//3 * 5 = 15
+//4 * 1 = 4
+//4 * 2 = 8
+//4 * 3 = 12
+//4 * 4 = 16
+//4 * 5 = 20
 BEGIN CODE
 INT a=100, b=200, c=300, x=1, y
 BOOL d="TRUE"
@@ -290,6 +316,29 @@ END WHILE
 END CODE
 
 //GOOD
+//1 * 1 = 1
+//1 * 2 = 2
+//1 * 3 = 3
+//1 * 4 = 4
+//1 * 5 = 5
+
+//2 * 1 = 2
+//2 * 2 = 4
+//2 * 3 = 6
+//2 * 4 = 8
+//2 * 5 = 10
+
+//3 * 1 = 3
+//3 * 2 = 6
+//3 * 3 = 9
+//3 * 4 = 12
+//3 * 5 = 15
+
+//4 * 1 = 4
+//4 * 2 = 8
+//4 * 3 = 12
+//4 * 4 = 16
+//4 * 5 = 20
 BEGIN CODE
 INT a=100, b=200, c=300, x=1, y
 BOOL d="TRUE"
@@ -306,7 +355,7 @@ BEGIN WHILE
 END WHILE
 END CODE
 
-//GOOD
+//GOOD &-60&
 BEGIN CODE
 INT xyz, abc=100
 xyz= ((abc *5)/10 + 10) * -1
