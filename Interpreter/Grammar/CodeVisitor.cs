@@ -47,7 +47,6 @@ namespace Interpreter.Grammar
                 if (_variables.ContainsKey(varName))
                 {
                     throw new ArgumentException($"Variable '{varName}' is already defined!");
-                    continue;
                 }
 
                 var convertedValue = varValue;
@@ -223,11 +222,6 @@ namespace Interpreter.Grammar
             }
 
             return null;
-        }
-
-        public override object? VisitPositiveExpression(CodeGrammarParser.PositiveExpressionContext context)
-        {
-            return Visit(context.expression());
         }
 
         public override object? VisitNegativeExpression(CodeGrammarParser.NegativeExpressionContext context)
@@ -1016,6 +1010,27 @@ namespace Interpreter.Grammar
             foreach (var lineContext in context.line())
             {
                 Visit(lineContext);
+            }
+
+            return null;
+        }
+
+        public override object? VisitWhileBlock([NotNull] CodeGrammarParser.WhileBlockContext context)
+        {
+            // Get the expression from the context
+            bool condition = (bool)Visit(context.expression());
+
+            // Loop while the expression is true
+            while (condition)
+            {
+                // Visit each line in the block
+                foreach (var lineContext in context.line())
+                {
+                    VisitLine(lineContext);
+                }
+
+                // Evaluate the expression again
+                condition = (bool)Visit(context.expression());
             }
 
             return null;

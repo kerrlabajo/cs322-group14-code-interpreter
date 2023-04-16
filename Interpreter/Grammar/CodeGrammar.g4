@@ -10,12 +10,12 @@ line
 	| variable
     | singleAssignment
     | multipleAssignments
-    | whileBlock
     | display
     | scan
     | ifBlock
     | elseIfBlock
     | elseBlock
+    | whileBlock
     ;
 
 initialization: type IDENTIFIER (',' IDENTIFIER)* ('=' expression)? NEWLINE?;
@@ -36,12 +36,12 @@ elseBlock: 'ELSE' NEWLINE BEGIN_IF NEWLINE line* NEWLINE END_IF NEWLINE?;
 WHILE: 'WHILE' ;
 BEGIN_WHILE: 'BEGIN WHILE' ;
 END_WHILE: 'END WHILE' ;
-whileBlock: WHILE '(' expression ')' NEWLINE BEGIN_WHILE NEWLINE line* NEWLINE END_WHILE ;
+whileBlock: WHILE '(' expression ')' NEWLINE BEGIN_WHILE NEWLINE line* NEWLINE END_WHILE NEWLINE? ;
 
 DISPLAY: 'DISPLAY:';
-display: DISPLAY (expression (concat | NEXTLINE expression)*)? ;
+display: DISPLAY ((expression (concat | NEXTLINE)* expression?)*)? NEWLINE?;
 SCAN: 'SCAN:';
-scan: SCAN IDENTIFIER (',' IDENTIFIER)* ;
+scan: SCAN IDENTIFIER (',' IDENTIFIER)* NEWLINE?;
 
 type: INT | FLOAT | BOOL | CHAR ;
 INT: 'INT' ;
@@ -50,8 +50,8 @@ CHAR: 'CHAR';
 BOOL: 'BOOL';
 
 constant: INTEGER_VALUES | FLOAT_VALUES | CHARACTER_VALUES | BOOLEAN_VALUES | STRING_VALUES ;
-INTEGER_VALUES: ('+'|'-')? [0-9]+ ;
-FLOAT_VALUES: ('+'|'-')? [0-9]+ '.' [0-9]+ ;
+INTEGER_VALUES: [0-9]+ ;
+FLOAT_VALUES: [0-9]+ '.' [0-9]+ ;
 CHARACTER_VALUES: ('\'' ~[\r\n\'] '\'') | '[' .? ']' ;
 BOOLEAN_VALUES:  '\"TRUE\"' | '\"FALSE\"' ;
 STRING_VALUES: '"' ( ~('"' | '\\') | '\\' . )* '"';
@@ -59,10 +59,9 @@ STRING_VALUES: '"' ( ~('"' | '\\') | '\\' . )* '"';
 expression
     : constant                                                  #constantValueExpression
     | IDENTIFIER                                                #identifierExpression
-    | COMMENTS                                                  #commentExpression
+    | COMMENT                                                  #commentExpression
     | display                                                   #displayExpression
     | scan                                                      #scanExpression
-    | '+' expression                                            #positiveExpression
     | '-' expression                                            #negativeExpression
     | '(' expression ')'                                        #parenthesisExpression
     | 'NOT' expression                                          #notExpression
