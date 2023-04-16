@@ -1,20 +1,5 @@
 ﻿BEGIN CODE
-INT a=100, b=200, c=300, x=0 
-BOOL d="TRUE"
-IF (a == 100)
-BEGIN IF
-	WHILE (x < 5)
-	BEGIN WHILE
-		DISPLAY: x & $
-		x=x+1
-	END WHILE
-END IF
-ELSE IF (b == 201)
-BEGIN IF
-	DISPLAY: b
-END IF
-ELSE
-BEGIN IF
-	DISPLAY: c
-END IF
+INT xyz, abc=100
+xyz= ((abc *5)/10 + 10) * -1
+DISPLAY: [&] & xyz & [&]
 END CODE

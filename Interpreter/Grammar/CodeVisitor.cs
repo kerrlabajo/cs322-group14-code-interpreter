@@ -81,12 +81,6 @@ namespace Interpreter.Grammar
                 var expression = context.expression(i) != null ? Visit(context.expression(i)) : null;
                 var variable = expression != null ? expression : null;
 
-                // Throw an exception if variable is declared without initialization value
-                if (variable == null)
-                {
-                    throw new Exception($"Variable {identifier} is declared without an initialization value.");
-                }
-
                 _variables[identifier] = variable;
             }
 
@@ -1021,6 +1015,7 @@ namespace Interpreter.Grammar
             bool condition = (bool)Visit(context.expression());
 
             // Loop while the expression is true
+            int loopCount = 0;
             while (condition)
             {
                 // Visit each line in the block
@@ -1031,6 +1026,13 @@ namespace Interpreter.Grammar
 
                 // Evaluate the expression again
                 condition = (bool)Visit(context.expression());
+
+                // Check for infinite loop
+                loopCount++;
+                if (loopCount > 1000) // set the maximum number of iterations allowed
+                {
+                    throw new Exception("Possible infinite loop detected.");
+                }
             }
 
             return null;

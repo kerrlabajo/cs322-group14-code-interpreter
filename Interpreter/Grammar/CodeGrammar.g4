@@ -50,8 +50,8 @@ CHAR: 'CHAR';
 BOOL: 'BOOL';
 
 constant: INTEGER_VALUES | FLOAT_VALUES | CHARACTER_VALUES | BOOLEAN_VALUES | STRING_VALUES ;
-INTEGER_VALUES: [0-9]+ ;
-FLOAT_VALUES: [0-9]+ '.' [0-9]+ ;
+INTEGER_VALUES: ('-')? [0-9]+ ;
+FLOAT_VALUES: ('-')? [0-9]+ '.' [0-9]+ ;
 CHARACTER_VALUES: ('\'' ~[\r\n\'] '\'') | '[' .? ']' ;
 BOOLEAN_VALUES:  '\"TRUE\"' | '\"FALSE\"' ;
 STRING_VALUES: '"' ( ~('"' | '\\') | '\\' . )* '"';
