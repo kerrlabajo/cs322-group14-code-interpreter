@@ -14,6 +14,7 @@ namespace Interpreter.Grammar
     public class CodeVisitor : CodeGrammarBaseVisitor<object?>
     {
         public Dictionary<string, object?> _variables { get; } = new Dictionary<string, object?>();
+        public Dictionary<string, string?> _varTypes { get; } = new Dictionary<string, string?>();
 
         public override object? VisitInitialization([NotNull] CodeGrammarParser.InitializationContext context)
         {
@@ -65,6 +66,7 @@ namespace Interpreter.Grammar
                 }
 
                 _variables.Add(varName, convertedValue);
+                _varTypes.Add(varName, typeStr);
             }
 
             return null;
@@ -192,35 +194,76 @@ namespace Interpreter.Grammar
 
         public override object? VisitScan([NotNull] CodeGrammarParser.ScanContext context)
         {
-            foreach (var id in context.IDENTIFIER().Select(x => x.GetText()).ToArray())
+            try
             {
-                Console.Write($"Enter value for {id}: ");
-                var input = Console.ReadLine();
+                foreach (var id in context.IDENTIFIER().Select(x => x.GetText()).ToArray())
+                {
+                    var input = Console.ReadLine();
 
-                if (int.TryParse(input, out int intValue))
-                {
-                    _variables[id] = intValue;
-                }
-                else if (double.TryParse(input, out double doubleValue))
-                {
-                    _variables[id] = doubleValue;
-                }
-                else if (bool.TryParse(input, out bool boolValue))
-                {
-                    _variables[id] = boolValue;
-                }
-                else
-                {
-                    _variables[id] = input ?? "";
+                    if (_varTypes[id] == "INT")
+                    {
+                        if (int.TryParse(input, out int intValue))
+                        {
+                            _variables[id] = intValue;
+                        }
+                        else
+                        {
+                            throw new InvalidCastException($"The inputted value is of not type {_varTypes[id]}.");
+                        }
+                    }
+                    else if (_varTypes[id] == "FLOAT")
+                    {
+                        if (float.TryParse(input, out float floatValue))
+                        {
+                            _variables[id] = floatValue;
+                        }
+                        else
+                        {
+                            throw new InvalidCastException($"The inputted value is of not type {_varTypes[id]}.");
+                        }
+                    }
+                    else if (_varTypes[id] == "BOOL")
+                    {
+                        if (bool.TryParse(input, out bool boolValue))
+                        {
+                            _variables[id] = boolValue;
+                        }
+                        else
+                        {
+                            throw new InvalidCastException($"The inputted value is of not type {_varTypes[id]}.");
+                        }
+                    }
+                    else if (_varTypes[id] == "CHAR")
+                    {
+                        if (char.TryParse(input, out char charValue))
+                        {
+                            _variables[id] = charValue;
+                        }
+                        else
+                        {
+                            throw new InvalidCastException($"The inputted value is of not type {_varTypes[id]}.");
+                        }
+                    }
+                    else if (_varTypes[id] == "STRING")
+                    {
+                        _variables[id] = input ?? "";
+                    }
                 }
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            
 
             return null;
         }
 
         public override object? VisitNegativeExpression(CodeGrammarParser.NegativeExpressionContext context)
         {
+#pragma warning disable CS8605 // Unboxing a possibly null value.
             return -(double)Visit(context.expression());
+#pragma warning restore CS8605 // Unboxing a possibly null value.
         }
 
         public override object? VisitNextLineExpression([NotNull] CodeGrammarParser.NextLineExpressionContext context)
@@ -945,7 +988,9 @@ namespace Interpreter.Grammar
         public override object? VisitIfBlock([NotNull] CodeGrammarParser.IfBlockContext context)
         {
             // Evaluate the expression inside the if statement
+#pragma warning disable CS8605 // Unboxing a possibly null value.
             bool condition = (bool)Visit(context.expression());
+#pragma warning restore CS8605 // Unboxing a possibly null value.
 
             // If the condition is true, execute the code inside the if block
             if (condition)
@@ -961,9 +1006,9 @@ namespace Interpreter.Grammar
             {
                 return Visit(context.elseIfBlock());
             }
-            // If there's an else block, execute its code
+            // If there's an else block, execute its code 
             else if (context.elseBlock() != null)
-            {
+            { 
                 Visit(context.elseBlock());
             }
 
@@ -973,7 +1018,9 @@ namespace Interpreter.Grammar
         public override object? VisitElseIfBlock([NotNull] CodeGrammarParser.ElseIfBlockContext context)
         {
             // Evaluate the condition of the else if block
+#pragma warning disable CS8605 // Unboxing a possibly null value.
             bool condition = (bool)Visit(context.expression());
+#pragma warning restore CS8605 // Unboxing a possibly null value.
 
             // If the condition is true, execute the code inside the else if block
             if (condition)
@@ -1012,7 +1059,9 @@ namespace Interpreter.Grammar
         public override object? VisitWhileBlock([NotNull] CodeGrammarParser.WhileBlockContext context)
         {
             // Get the expression from the context
+#pragma warning disable CS8605 // Unboxing a possibly null value.
             bool condition = (bool)Visit(context.expression());
+#pragma warning restore CS8605 // Unboxing a possibly null value.
 
             // Loop while the expression is true
             int loopCount = 0;
@@ -1025,7 +1074,9 @@ namespace Interpreter.Grammar
                 }
 
                 // Evaluate the expression again
+#pragma warning disable CS8605 // Unboxing a possibly null value.
                 condition = (bool)Visit(context.expression());
+#pragma warning restore CS8605 // Unboxing a possibly null value.
 
                 // Check for infinite loop
                 loopCount++;
