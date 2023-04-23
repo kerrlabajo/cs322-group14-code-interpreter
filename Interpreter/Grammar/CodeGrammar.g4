@@ -1,14 +1,12 @@
 ﻿grammar CodeGrammar;
 
-program: NEWLINE? BEGIN_CODE NEWLINE? line* NEWLINE? END_CODE NEWLINE? EOF;
+program: NEWLINE? BEGIN_CODE NEWLINE? initialization* variable* line* NEWLINE? END_CODE NEWLINE? EOF;
 
 BEGIN_CODE: 'BEGIN CODE' ;
 END_CODE: 'END CODE' ;
 
 line
-    : initialization
-	| variable
-    | singleAssignment
+    : singleAssignment
     | multipleAssignments
     | display
     | scan
