@@ -107,7 +107,6 @@ namespace Interpreter.Grammar
 
         public override object? VisitSingleAssignment([NotNull] CodeGrammarParser.SingleAssignmentContext context)
         {
-            Console.WriteLine("single assignment happened");
             var variableName = context.IDENTIFIER().GetText();
             var variableValue = Visit(context.expression());
 
@@ -1080,8 +1079,6 @@ namespace Interpreter.Grammar
             bool condition = (bool)Visit(context.expression());
 #pragma warning restore CS8605 // Unboxing a possibly null value.
 
-            // Loop while the expression is true
-            int loopCount = 0;
             while (condition)
             {
                 // Visit each line in the block
@@ -1094,13 +1091,6 @@ namespace Interpreter.Grammar
 #pragma warning disable CS8605 // Unboxing a possibly null value.
                 condition = (bool)Visit(context.expression());
 #pragma warning restore CS8605 // Unboxing a possibly null value.
-
-                // Check for infinite loop
-                loopCount++;
-                if (loopCount > 1000) // set the maximum number of iterations allowed
-                {
-                    throw new Exception("Possible infinite loop detected.");
-                }
             }
 
             return null;
