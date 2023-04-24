@@ -1,5 +1,5 @@
 ﻿BEGIN CODE
-INT x 
-x=6
-INT m
+	BOOL a = "TRUE", b = "FALSE", c = "TRUE", d
+	SCAN: d
+	DISPLAY: (a OR b) AND (c AND d)
 END CODE

@@ -376,3 +376,40 @@ INT x
 x=6
 INT m
 END CODE
+
+//GOOD
+BEGIN CODE
+	INT x 
+	SCAN: x
+	DISPLAY: x
+END CODE
+
+//GOOD
+BEGIN CODE
+	INT x, y = 5
+	SCAN: x
+	y = x * y
+	DISPLAY: y
+END CODE
+
+//NOT GOOD (SUPPOSED TO WORK)
+BEGIN CODE
+	BOOL a = "TRUE", b 
+	SCAN: b
+	DISPLAY: a AND b
+END CODE
+
+//NOT GOOD(SUPPOSED TO WORK)
+BEGIN CODE
+	INT a = 3, b = 4, c, d
+	SCAN: c
+	d = (3 + 4) * c
+	DISPLAY: d
+END CODE
+
+//NOT GOOD(SUPPOSED TO WORK)
+BEGIN CODE
+	BOOL a = "TRUE", b = "FALSE", c = "TRUE", d
+	SCAN: d
+	DISPLAY: (a OR b) AND (c AND d)
+END CODE
