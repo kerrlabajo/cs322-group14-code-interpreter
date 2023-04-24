@@ -74,7 +74,21 @@ namespace Interpreter.Grammar
 
         public override object? VisitVariable([NotNull] CodeGrammarParser.VariableContext context)
         {
-            var type = VisitType(context.type());
+            var typeMap = new Dictionary<string, Type>()
+            {
+                { "INT", typeof(int) },
+                { "FLOAT", typeof(float) },
+                { "BOOL", typeof(bool) },
+                { "CHAR", typeof(char) },
+                { "STRING", typeof(string) }
+            };
+
+            var typeStr = context.type().GetText();
+            if (!typeMap.TryGetValue(typeStr, out var type))
+            {
+                Console.WriteLine($"Invalid variable type '{typeStr}'");
+                return null;
+            }
 
             // Loop over all the identifiers and add them to the dictionary
             for (int i = 0; i < context.IDENTIFIER().Length; i++)
@@ -84,6 +98,7 @@ namespace Interpreter.Grammar
                 var variable = expression != null ? expression : null;
 
                 _variables[identifier] = variable;
+                _varTypes[identifier] = typeStr;
             }
 
             return null;
@@ -92,6 +107,7 @@ namespace Interpreter.Grammar
 
         public override object? VisitSingleAssignment([NotNull] CodeGrammarParser.SingleAssignmentContext context)
         {
+            Console.WriteLine("single assignment happened");
             var variableName = context.IDENTIFIER().GetText();
             var variableValue = Visit(context.expression());
 
@@ -102,6 +118,7 @@ namespace Interpreter.Grammar
 
         public override object? VisitMultipleAssignments([NotNull] CodeGrammarParser.MultipleAssignmentsContext context)
         {
+            Console.WriteLine("multiple assignment happened");
             var identifiers = context.IDENTIFIER();
             foreach (var identifier in identifiers)
             {
