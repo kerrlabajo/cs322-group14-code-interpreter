@@ -1,5 +1,5 @@
 ﻿BEGIN CODE
-	BOOL a = "TRUE", b = "FALSE", c = "TRUE", d
-	SCAN: d
-	DISPLAY: (a OR b) AND (c AND d)
+	BOOL a = "TRUE", b 
+	SCAN: b
+	DISPLAY: a AND b
 END CODE
