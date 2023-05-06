@@ -14,6 +14,9 @@ line
     | elseIfBlock
     | elseBlock
     | whileBlock
+    | switchBlock
+    | caseBlock
+    | defaultBlock
     ;
 
 initialization: type IDENTIFIER (',' IDENTIFIER)* ('=' expression)? NEWLINE?;
@@ -35,6 +38,10 @@ WHILE: 'WHILE' ;
 BEGIN_WHILE: 'BEGIN WHILE' ;
 END_WHILE: 'END WHILE' ;
 whileBlock: WHILE '(' expression ')' NEWLINE BEGIN_WHILE NEWLINE line* NEWLINE END_WHILE NEWLINE? ;
+
+switchBlock : 'SWITCH' '(' expression ')' NEWLINE 'BEGIN SWITCH' NEWLINE caseBlock+ defaultBlock? 'END SWITCH' NEWLINE?;
+caseBlock : 'CASE' expression NEWLINE line* NEWLINE ('BREAK')? NEWLINE?;
+defaultBlock : 'DEFAULT' NEWLINE line* NEWLINE?;
 
 DISPLAY: 'DISPLAY:';
 display: DISPLAY ((expression (concat | NEXTLINE)* expression?)*)? NEWLINE?;

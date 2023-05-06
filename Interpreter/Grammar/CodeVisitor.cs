@@ -15,6 +15,7 @@ namespace Interpreter.Grammar
     {
         public Dictionary<string, object?> _variables { get; } = new Dictionary<string, object?>();
         public Dictionary<string, string?> _varTypes { get; } = new Dictionary<string, string?>();
+        private object? switchExpression;
 
         public override object? VisitInitialization([NotNull] CodeGrammarParser.InitializationContext context)
         {
@@ -1094,6 +1095,68 @@ namespace Interpreter.Grammar
             }
 
             return null;
+        }
+
+        public override object? VisitSwitchBlock([NotNull] CodeGrammarParser.SwitchBlockContext context)
+        {
+            // Get the expression in the switch statement
+            var expression = Visit(context.expression());
+
+            // Visit each case block
+            bool isBreakExecuted = false;
+            foreach (var caseBlockContext in context.caseBlock())
+            {
+                var caseExpression = Visit(caseBlockContext.expression());
+
+                if (!(caseExpression is null) && !(expression is null) && caseExpression.GetType() != expression.GetType())
+                {
+                    Console.WriteLine("The switch case expressions must have the same data type.");
+                    return null;
+                }
+
+                if (caseExpression == expression)
+                {
+                    // Visit the case block
+                    var isBreak = (bool)VisitCaseBlock(caseBlockContext);
+                    // Check if the block executed a BREAK statement
+                    if (isBreak)
+                    {
+                        isBreakExecuted = true;
+                        break;
+                    }
+                }
+            }
+
+            // If a BREAK statement was executed, do not execute the default block
+            if (!isBreakExecuted)
+            {
+                // Check if there is a default block
+                if (context.defaultBlock() is var defaultBlockContext)
+                {
+                    Visit(defaultBlockContext);
+                }
+            }
+
+            return null;
+        }
+
+        public override object? VisitCaseBlock([NotNull] CodeGrammarParser.CaseBlockContext context)
+        {
+            // Process the expression in the case block
+            var expression = Visit(context.expression());
+
+            // Process each line in the case block
+            foreach (var lineContext in context.line())
+            {
+                Visit(lineContext);
+            }
+
+            if (context.ChildCount > 0 && context.GetChild(context.ChildCount - 2).GetText() == "BREAK")
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }
