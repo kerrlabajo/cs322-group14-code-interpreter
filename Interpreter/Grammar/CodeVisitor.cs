@@ -957,7 +957,19 @@ namespace Interpreter.Grammar
                     default:
                         throw new ArgumentException($"Unknown operator: {op}");
                 }
-            }           
+            }
+            else if(left is char leftChar && right is char rightChar)
+            {
+                switch (op)
+                {
+                    case "==":
+                        return leftChar == rightChar;
+                    case "<>":
+                        return leftChar != rightChar;
+                    default:
+                        throw new ArgumentException($"Unknown operator: {op}");
+                }
+            }
             else if (left == null || right == null)
             {
                 throw new ArgumentNullException("Operand cannot be null.");
