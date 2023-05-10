@@ -489,3 +489,43 @@ SWITCH (a)
 			DISPLAY: a
 	END SWITCH
 END CODE
+
+//GOOD WORKING
+BEGIN CODE
+INT x = 5,y,z
+DISPLAY: "Enter value of y: "
+SCAN: y
+
+WHILE (y < 5)
+BEGIN WHILE
+	DISPLAY: y
+	z = 0
+
+	WHILE (z < 5)
+		BEGIN WHILE
+			DISPLAY: "HELLO" & z & $
+			z = z + 1
+		END WHILE
+    y = y + 1
+END WHILE
+END CODE
+
+//NOT WORKING
+BEGIN CODE
+    INT x = 5,y,z
+    DISPLAY: "Enter value of y: "
+    SCAN: y
+
+    WHILE (y < 5)
+        BEGIN WHILE
+            DISPLAY: y
+            z = 0
+            
+            WHILE (z < 5)
+                BEGIN WHILE
+                    DISPLAY: "HELLO" & z & $
+                    z = z + 1
+                END WHILE
+            y = y + 1
+        END WHILE
+END CODE
