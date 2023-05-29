@@ -1272,7 +1272,7 @@ namespace Interpreter.Grammar
                         return null;
                     }
 
-                    if (caseExpression == expression)
+                    if (caseExpression!.Equals(expression))
                     {
                         // Visit the case block
 #pragma warning disable CS8605 // Unboxing a possibly null value.
