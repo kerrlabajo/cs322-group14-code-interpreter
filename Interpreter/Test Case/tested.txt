@@ -529,3 +529,23 @@ BEGIN CODE
             y = y + 1
         END WHILE
 END CODE
+
+//GOODS
+BEGIN CODE
+INT a = 1
+INT b = 3
+SWITCH (a)
+	BEGIN SWITCH
+		CASE 0
+			DISPLAY: a & " is 0"
+			BREAK
+		CASE 1
+			DISPLAY: a & " is 1"
+			BREAK
+		CASE 2
+			DISPLAY: a & " is 2"
+			BREAK
+		DEFAULT
+			DISPLAY: a
+	END SWITCH
+END CODE
