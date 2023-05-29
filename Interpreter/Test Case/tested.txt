@@ -1,0 +1,551 @@
+﻿//GOOD [-60]
+BEGIN CODE
+INT xyz, abc=100
+xyz= ((abc *5)/10 + 10) * -1
+DISPLAY: [[] & xyz & []]
+END CODE
+
+//GOOD [1]
+BEGIN CODE
+INT xyz = 1, abc=100
+# xyz= ((abc *5)/10 + 10) * -1
+DISPLAY: [[] & xyz & []]
+END CODE
+
+//GOOD [1]
+# asdasdasd
+BEGIN CODE
+INT xyz = 1, abc=100
+# xyz= ((abc *5)/10 + 10) * -1
+DISPLAY: [[] & xyz & []]
+END CODE
+
+//GOOD [15.1]
+# asdasdasd
+BEGIN CODE
+INT xyz = 1, abc=100
+FLOAT f = 5.1
+# xyz= ((abc *5)/10 + 10) * -1
+DISPLAY: [[] & xyz & f & []]
+END CODE
+
+//GOOD ERROR
+# asdasdasd
+BEGIN 
+INT xyz = 1, abc=100
+FLOAT f = 5.1
+# xyz= ((abc *5)/10 + 10) * -1
+DISPLAY: [[] & xyz & f & []]
+END CODE
+
+//GOOD
+# asdasdasd
+BEGIN CODE
+END CODE
+
+//GOOD ERROR
+# asdasdasd
+BEGIN CODE
+END CODE
+BEGIN CODE
+END CODE
+
+//GOOD TRUE
+BEGIN CODE
+INT a=100, b=200, c=300 
+BOOL d="FALSE"
+d = (a < b AND c <>200)
+DISPLAY: d
+END CODE
+
+//GOOD TRUE
+BEGIN CODE
+INT a=100, b=200, c=300 
+BOOL d="FALSE"
+d = (a < b)
+DISPLAY: d
+END CODE
+
+//GOOD FALSE
+BEGIN CODE
+INT a=100, b=200, c=300 
+BOOL d="TRUE"
+d = (a < b AND c == 200)
+DISPLAY: d
+END CODE
+
+//GOOD 100
+BEGIN CODE
+INT a=100, b=200, c=300 
+BOOL d="TRUE"
+IF (a + 1 == 101)
+BEGIN IF
+	DISPLAY: a
+END IF
+END CODE
+
+//GOOD
+BEGIN CODE
+INT a=100, b=200, c=300 
+BOOL d="TRUE"
+IF (a == 101)
+BEGIN IF
+	DISPLAY: a
+END IF
+END CODE
+
+//GOOD ERROR
+BEGIN CODE
+INT a=100, b=200, c=300 
+BOOL d="TRUE"
+IF (a = 101)
+BEGIN IF
+	DISPLAY: a
+END IF
+END CODE
+
+//GOOD ERROR
+BEGIN CODE
+INT a=100, b=200, c=300 
+BOOL d="TRUE"
+IF (a == 101)
+	DISPLAY: a
+END CODE
+
+//GOOD 200
+BEGIN CODE
+INT a=100, b=200, c=300 
+BOOL d="TRUE"
+IF (a == 101)
+BEGIN IF
+	DISPLAY: a
+END IF
+ELSE
+BEGIN IF
+	DISPLAY: b
+END IF
+END CODE
+
+//GOOD 200
+BEGIN CODE
+INT a=100, b=200, c=300 
+BOOL d="TRUE"
+IF (a == 101)
+BEGIN IF
+	DISPLAY: a
+END IF
+ELSE IF (b == 200)
+BEGIN IF
+	DISPLAY: b
+END IF
+ELSE
+BEGIN IF
+	DISPLAY: c
+END IF
+END CODE
+
+//GOOD 300
+BEGIN CODE
+INT a=100, b=200, c=300 
+BOOL d="TRUE"
+IF (a == 101)
+BEGIN IF
+	DISPLAY: a
+END IF
+ELSE IF (b == 201)
+BEGIN IF
+	DISPLAY: b
+END IF
+ELSE
+BEGIN IF
+	DISPLAY: c
+END IF
+END CODE
+
+//GOOD 100
+BEGIN CODE
+INT a=100, b=200, c=300 
+BOOL d="TRUE"
+IF (a == 100)
+BEGIN IF
+	DISPLAY: a
+END IF
+ELSE IF (b == 201)
+BEGIN IF
+	DISPLAY: b
+END IF
+ELSE
+BEGIN IF
+	DISPLAY: c
+END IF
+END CODE
+
+//GOOD
+//0
+//1
+//2
+//3
+//4
+BEGIN CODE
+INT a=100, b=200, c=300, x=0 
+BOOL d="TRUE"
+IF (a == 100)
+BEGIN IF
+	WHILE (x < 5)
+	BEGIN WHILE
+		DISPLAY: x & $
+		x=x+1
+	END WHILE
+END IF
+ELSE IF (b == 201)
+BEGIN IF
+	DISPLAY: b
+END IF
+ELSE
+BEGIN IF
+	DISPLAY: c
+END IF
+END CODE
+
+//GOOD INFINITE LOOP 0*INFINITY
+BEGIN CODE
+INT a=100, b=200, c=300, x=0 
+BOOL d="TRUE"
+WHILE (x < 5)
+BEGIN WHILE
+	IF (x % 2 == 0)
+	BEGIN IF
+		DISPLAY: x
+	END IF
+END WHILE
+END CODE
+
+//GOOD INFINITE LOOP 0
+BEGIN CODE
+INT a=100, b=200, c=300, x=0 
+BOOL d="TRUE"
+WHILE (x < 5)
+BEGIN WHILE
+	IF (x % 2 == 0)
+	BEGIN IF
+		DISPLAY: x
+		x=x+1
+	END IF
+END WHILE
+END CODE
+
+//GOOD 024
+BEGIN CODE
+INT a=100, b=200, c=300, x=0 
+BOOL d="TRUE"
+WHILE (x < 5)
+BEGIN WHILE
+	IF (x % 2 == 0)
+	BEGIN IF
+		DISPLAY: x
+	END IF
+	x=x+1
+END WHILE
+END CODE
+
+//GOOD 13
+BEGIN CODE
+INT a=100, b=200, c=300, x=0 
+BOOL d="TRUE"
+WHILE (x < 5)
+BEGIN WHILE
+	IF (x % 2 <> 0)
+	BEGIN IF
+		DISPLAY: x
+	END IF
+	x=x+1
+END WHILE
+END CODE
+
+//GOOD 1 * 1 = 11 * 2 = 21 * 3 = 31 * 4 = 41 * 5 = 52 * 1 = 22 * 2 = 42 * 3 = 62 * 4 = 82 * 5 = 103 * 1 = 33 * 2 = 63 * 3 = 93 * 4 = 123 * 5 = 15
+//4 * 1 = 44 * 2 = 84 * 3 = 124 * 4 = 164 * 5 = 20
+BEGIN CODE
+INT a=100, b=200, c=300, x=1, y
+BOOL d="TRUE"
+WHILE (x < 5)
+BEGIN WHILE
+	y = 1
+	WHILE (y <= 5)
+	BEGIN WHILE
+		DISPLAY: x & " * " & y & " = " & x*y
+		y = y + 1
+	END WHILE
+	x = x + 1
+END WHILE
+END CODE
+
+//GOOD
+//1 * 1 = 1
+//1 * 2 = 2
+//1 * 3 = 3
+//1 * 4 = 4
+//1 * 5 = 5
+//2 * 1 = 2
+//2 * 2 = 4
+//2 * 3 = 6
+//2 * 4 = 8
+//2 * 5 = 10
+//3 * 1 = 3
+//3 * 2 = 6
+//3 * 3 = 9
+//3 * 4 = 12
+//3 * 5 = 15
+//4 * 1 = 4
+//4 * 2 = 8
+//4 * 3 = 12
+//4 * 4 = 16
+//4 * 5 = 20
+BEGIN CODE
+INT a=100, b=200, c=300, x=1, y
+BOOL d="TRUE"
+WHILE (x < 5)
+BEGIN WHILE
+	y = 1
+	WHILE (y <= 5)
+	BEGIN WHILE
+		DISPLAY: x & " * " & y & " = " & x*y & $
+		y = y + 1
+	END WHILE
+	x = x + 1
+END WHILE
+END CODE
+
+//GOOD
+//1 * 1 = 1
+//1 * 2 = 2
+//1 * 3 = 3
+//1 * 4 = 4
+//1 * 5 = 5
+
+//2 * 1 = 2
+//2 * 2 = 4
+//2 * 3 = 6
+//2 * 4 = 8
+//2 * 5 = 10
+
+//3 * 1 = 3
+//3 * 2 = 6
+//3 * 3 = 9
+//3 * 4 = 12
+//3 * 5 = 15
+
+//4 * 1 = 4
+//4 * 2 = 8
+//4 * 3 = 12
+//4 * 4 = 16
+//4 * 5 = 20
+BEGIN CODE
+INT a=100, b=200, c=300, x=1, y
+BOOL d="TRUE"
+WHILE (x < 5)
+BEGIN WHILE
+	y = 1
+	WHILE (y <= 5)
+	BEGIN WHILE
+		DISPLAY: x & " * " & y & " = " & x*y & $
+		y = y + 1
+	END WHILE
+	x = x + 1
+	DISPLAY: $
+END WHILE
+END CODE
+
+//GOOD &-60&
+BEGIN CODE
+INT xyz, abc=100
+xyz= ((abc *5)/10 + 10) * -1
+DISPLAY: [&] & xyz & [&]
+END CODE
+
+//GOOD CAST ERROR
+BEGIN CODE
+INT x
+BOOL y
+SCAN: x, y
+DISPLAY: x & y
+END CODE
+
+//GOOD VARIABLE DECLARATIONS SHOULD ONLY BE AFTER BEGIN CODE
+BEGIN CODE
+INT x 
+x=6
+INT m
+END CODE
+
+//GOOD
+BEGIN CODE
+	INT x 
+	SCAN: x
+	DISPLAY: x
+END CODE
+
+//GOOD
+BEGIN CODE
+	INT x, y = 5
+	SCAN: x
+	y = x * y
+	DISPLAY: y
+END CODE
+
+//GOOD
+BEGIN CODE
+	BOOL a = "TRUE", b 
+	SCAN: b
+	DISPLAY: a AND b
+END CODE
+
+//GOOD
+BEGIN CODE
+	INT a = 3, b = 4, c, d
+	SCAN: c
+	d = (3 + 4) * c
+	DISPLAY: d
+END CODE
+
+//GOOD
+BEGIN CODE
+	BOOL a = "TRUE", b = "FALSE", c = "TRUE", d
+	SCAN: d
+	DISPLAY: (a OR b) AND (c AND d)
+END CODE
+
+//GOOD 0
+BEGIN CODE
+INT a = 0
+SWITCH (a)
+	BEGIN SWITCH
+		CASE 0
+			DISPLAY: a
+			BREAK
+		CASE 1
+			DISPLAY: a
+			BREAK
+		CASE 2
+			DISPLAY: a
+			BREAK
+		DEFAULT
+			DISPLAY: a
+	END SWITCH
+END CODE
+
+//GOOD 1
+BEGIN CODE
+INT a = 1
+SWITCH (a)
+	BEGIN SWITCH
+		CASE 0
+			DISPLAY: a
+			BREAK
+		CASE 1
+			DISPLAY: a
+			BREAK
+		CASE 2
+			DISPLAY: a
+			BREAK
+		DEFAULT
+			DISPLAY: a
+	END SWITCH
+END CODE
+
+//GOOD 2
+BEGIN CODE
+INT a = 2
+SWITCH (a)
+	BEGIN SWITCH
+		CASE 0
+			DISPLAY: a
+			BREAK
+		CASE 1
+			DISPLAY: a
+			BREAK
+		CASE 2
+			DISPLAY: a
+			BREAK
+		DEFAULT
+			DISPLAY: a
+	END SWITCH
+END CODE
+
+//GOOD 3
+BEGIN CODE
+INT a = 3
+SWITCH (a)
+	BEGIN SWITCH
+		CASE 0
+			DISPLAY: a
+			BREAK
+		CASE 1
+			DISPLAY: a
+			BREAK
+		CASE 2
+			DISPLAY: a
+			BREAK
+		DEFAULT
+			DISPLAY: a
+	END SWITCH
+END CODE
+
+//GOOD WORKING
+BEGIN CODE
+INT x = 5,y,z
+DISPLAY: "Enter value of y: "
+SCAN: y
+
+WHILE (y < 5)
+BEGIN WHILE
+	DISPLAY: y
+	z = 0
+
+	WHILE (z < 5)
+		BEGIN WHILE
+			DISPLAY: "HELLO" & z & $
+			z = z + 1
+		END WHILE
+    y = y + 1
+END WHILE
+END CODE
+
+//SAME AS THE INPUT ABVE BUT NOT WORKING APPARENTLY
+BEGIN CODE
+    INT x = 5,y,z
+    DISPLAY: "Enter value of y: "
+    SCAN: y
+
+    WHILE (y < 5)
+        BEGIN WHILE
+            DISPLAY: y
+            z = 0
+            
+            WHILE (z < 5)
+                BEGIN WHILE
+                    DISPLAY: "HELLO" & z & $
+                    z = z + 1
+                END WHILE
+            y = y + 1
+        END WHILE
+END CODE
+
+//GOODS
+BEGIN CODE
+INT a = 1
+INT b = 3
+SWITCH (a)
+	BEGIN SWITCH
+		CASE 0
+			DISPLAY: a & " is 0"
+			BREAK
+		CASE 1
+			DISPLAY: a & " is 1"
+			BREAK
+		CASE 2
+			DISPLAY: a & " is 2"
+			BREAK
+		DEFAULT
+			DISPLAY: a
+	END SWITCH
+END CODE
