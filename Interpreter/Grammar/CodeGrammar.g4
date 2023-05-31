@@ -44,7 +44,7 @@ caseBlock : 'CASE' expression NEWLINE line* NEWLINE 'BREAK' NEWLINE?;
 defaultBlock : 'DEFAULT' NEWLINE line* NEWLINE?;
 
 DISPLAY: 'DISPLAY:';
-display: DISPLAY ((expression (concat | NEXTLINE)* expression?)*)? NEWLINE?;
+display: DISPLAY (expression (',' expression?)*)? NEWLINE?;
 SCAN: 'SCAN:';
 scan: SCAN IDENTIFIER (',' IDENTIFIER)* NEWLINE?;
 
