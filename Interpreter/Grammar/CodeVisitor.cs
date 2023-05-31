@@ -143,7 +143,6 @@ namespace Interpreter.Grammar
         {
             try
             {
-                Console.WriteLine("multiple assignment happened");
                 var identifiers = context.IDENTIFIER();
                 foreach (var identifier in identifiers)
                 {
