@@ -520,6 +520,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftint + rightint");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -544,6 +545,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftFloat + rightFloat");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -568,6 +570,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftFloat + rightFloat");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -588,6 +591,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftFloat + rightFloat");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -603,6 +607,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftBool + rightBool");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -618,6 +623,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftBool + rightInt3");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -633,6 +639,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftInt3 + rightBool1");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -648,6 +655,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftBool2 + rightFloat3");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -663,6 +671,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftFloat3 + rightBool2");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -678,6 +687,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftBool3 + rightChar");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -693,6 +703,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftChar + rightBool3");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -708,6 +719,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftChar + rightChar1");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -723,6 +735,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftChar + rightInt4");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -738,6 +751,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftInt4 + rightChar2");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -753,6 +767,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftChar3 + rightFloat4");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -768,6 +783,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftFloat4 + rightChar3");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -783,6 +799,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftString + rightString");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -796,11 +813,41 @@ namespace Interpreter.Grammar
                     {
                         return leftString1 + "\n" + rightInt5;
                     }
+                    else if (op == "+")
+                    {
+                        //Add these similarly in MultiDivModExpresison chuchu
+                        string numberString = new string(leftString1.Where(char.IsDigit).ToArray());
+                        if (int.TryParse(numberString, out int leftNumber))
+                        {
+                            int result = leftNumber + rightInt5;
+                            return new string(leftString1.Where(c => char.IsLetter(c) || char.IsSymbol(c) || char.IsPunctuation(c) || c == '#' || c == '$' || c == '&').ToArray()) + result.ToString();
+
+                        }
+                        else
+                        {
+                            return leftString1 + rightInt5;
+                        }
+                    }
+                    else if (op == "-")
+                    {
+                        string numberString = new string(leftString1.Where(char.IsDigit).ToArray());
+                        if (int.TryParse(numberString, out int leftNumber))
+                        {
+                            int result = leftNumber - rightInt5;
+                            return new string(leftString1.Where(c => char.IsLetter(c) || char.IsSymbol(c) || char.IsPunctuation(c) || c == '#' || c == '$' || c == '&').ToArray()) + result.ToString();
+                        }
+                        else
+                        {
+                            return leftString1 + rightInt5;
+                        }
+                    }
                     else
                     {
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
+                    //Until here
                 }
+
                 else if (left is int leftInt5 && right is string rightString1)
                 {
                     if (op == "&")
@@ -811,8 +858,36 @@ namespace Interpreter.Grammar
                     {
                         return leftInt5 + "\n" + rightString1;
                     }
+                    else if (op == "+")
+                    {
+                        string numberString = new string(rightString1.Where(char.IsDigit).ToArray());
+                        if (int.TryParse(numberString, out int rightNumber))
+                        {
+                            int result = leftInt5 + rightNumber;
+                            return new string(rightString1.Where(c => char.IsLetter(c) || char.IsSymbol(c) || char.IsPunctuation(c) || c == '#' || c == '$' || c == '&').ToArray()) + result.ToString();
+
+                        }
+                        else
+                        {
+                            return leftInt5 + rightString1;
+                        }
+                    }
+                    else if (op == "-")
+                    {
+                        string numberString = new string(rightString1.Where(char.IsDigit).ToArray());
+                        if (int.TryParse(numberString, out int rightNumber))
+                        {
+                            int result = leftInt5 - rightNumber;
+                            return new string(rightString1.Where(c => char.IsLetter(c) || char.IsSymbol(c) || char.IsPunctuation(c) || c == '#' || c == '$' || c == '&').ToArray()) + result.ToString();
+                        }
+                        else
+                        {
+                            return rightString1 + rightNumber;
+                        }
+                    }
                     else
                     {
+                        Console.WriteLine("leftInt5 + rightString1");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -828,6 +903,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftString2 + rightFloat5");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -843,6 +919,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftFloat5 + rightString2");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -858,6 +935,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftString3 + rightChar4");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -873,6 +951,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftChar4 + rightString3");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -888,6 +967,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftString4 + rightBool4");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -903,6 +983,7 @@ namespace Interpreter.Grammar
                     }
                     else
                     {
+                        Console.WriteLine("leftBool4 + rightString4");
                         throw new ArgumentException($"Unknown operator: {op}");
                     }
                 }
@@ -923,6 +1004,7 @@ namespace Interpreter.Grammar
                         default:
                             break;
                     }
+                    Console.WriteLine("rightNull + op$");
                     return null;
                 }
                 else if (left == null && op == "$")
@@ -942,6 +1024,7 @@ namespace Interpreter.Grammar
                         default:
                             break;
                     }
+                    Console.WriteLine("leftNull + op$");
                     return null;
                 }
                 else if (left == null || right == null)

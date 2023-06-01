@@ -549,3 +549,73 @@ SWITCH (a)
 			DISPLAY: a
 	END SWITCH
 END CODE
+
+
+//FINAL CHECKING
+//GOODS = NO OUTPUT
+BEGIN CODE
+INT a
+# this is a sample program in CODE
+FLOAT b
+END CODE
+
+//GOODS = NO OUTPUT
+BEGIN CODE
+	CHAR cHAR
+END CODE
+
+//GOODS = ERROR
+BEGIN CODE
+	CHAR $_c
+END CODE
+
+//GOODS
+BEGIN CODE
+	FLOAT sum = 1.2
+	FLOAT x
+	SCAN: x
+	sum = sum + x
+	DISPLAY: [[] & sum & [[]	
+END CODE
+
+//GOODS = but wrong because debug line was not erased
+BEGIN CODE
+	CHAR a, b 
+	a=b='c'
+	#this is a comment
+END CODE
+
+//GOODS
+BEGIN CODE
+	INT x
+	INT y 
+	SCAN: x
+	SCAN: y
+	DISPLAY: x + y + 10
+END CODE
+
+//GOODS
+BEGIN CODE
+	BOOL TRUE = "TRUE" 
+END CODE
+
+//WRONG = UNKNOWN OPERATOR +
+//GOODS
+BEGIN CODE
+	INT a=10, b=20 
+	DISPLAY:  [&] & [#] & a + 5 & [&] & b & [&]
+END CODE
+
+//GOODS
+BEGIN CODE
+	CHAR a = 'x'
+	CHAR b = 'y'
+	DISPLAY: m & n
+END CODE
+
+//
+BEGIN CODE
+	CHAR a = 'a'
+	CHAR b = 'b'
+	DISPLAY: ab
+END CODE
