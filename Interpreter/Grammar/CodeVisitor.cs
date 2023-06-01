@@ -1558,11 +1558,15 @@ namespace Interpreter.Grammar
 
         public override object? VisitNotExpression([NotNull] CodeGrammarParser.NotExpressionContext context)
         {
-            var expression = Visit(context.expression());
-            if(expression is bool boolExp)
+            try
             {
-                return ((!boolExp).ToString().ToUpper());
+                var expression = Visit(context.expression());
+                if (expression is bool boolExp)
+                {
+                    return ((!boolExp).ToString().ToUpper());
+                }
             }
+            catch (Exception e) { Console.WriteLine(e.Message); }
             return null;
         }
     }
