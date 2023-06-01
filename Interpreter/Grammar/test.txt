@@ -1,4 +1,4 @@
 ﻿BEGIN CODE
-	INT a=10, b=20 
-	DISPLAY:  [&] & [#] & a % 5 & [&] & b & [&]
+BOOL b = "TRUE", a = "FALSE", c = "TRUE"
+DISPLAY: a OR b AND c
 END CODE

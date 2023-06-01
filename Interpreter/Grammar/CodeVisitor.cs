@@ -1187,6 +1187,9 @@ namespace Interpreter.Grammar
                 var left = Visit(context.expression(0));
                 var right = Visit(context.expression(1));
                 var op = context.comparisonOperator().GetText();
+                Console.WriteLine(left);
+                Console.WriteLine(right);
+                Console.WriteLine(op);
 
                 // Check the types of the operands
                 if (left is int leftInt && right is int rightInt)
@@ -1551,6 +1554,16 @@ namespace Interpreter.Grammar
             }catch(Exception e) { Console.WriteLine(e.Message); }
 
             return false;
+        }
+
+        public override object? VisitNotExpression([NotNull] CodeGrammarParser.NotExpressionContext context)
+        {
+            var expression = Visit(context.expression());
+            if(expression is bool boolExp)
+            {
+                return ((!boolExp).ToString().ToUpper());
+            }
+            return null;
         }
     }
 }
