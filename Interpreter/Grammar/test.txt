@@ -1,4 +1,4 @@
 ﻿BEGIN CODE
 	INT a=10, b=20 
-	DISPLAY:  [&] & [#] & a + 5 & [&] & b & [&]
+	DISPLAY:  [&] & [#] & a % 5 & [&] & b & [&]
 END CODE

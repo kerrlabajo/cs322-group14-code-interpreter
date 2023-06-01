@@ -422,6 +422,10 @@ namespace Interpreter.Grammar
                                 return leftInt / rightInt;
                             case "%":
                                 return leftInt % rightInt;
+                            case "&":
+                                return leftInt.ToString() + rightInt.ToString();
+                            case "$":
+                                return leftInt.ToString() + "\n" + rightInt.ToString();
                             default:
                                 throw new ArgumentException($"Unknown operator: {op}");
                         }
@@ -435,6 +439,10 @@ namespace Interpreter.Grammar
                                 return leftFloat * rightFloat;
                             case "/":
                                 return leftFloat / rightFloat;
+                            case "&":
+                                return leftFloat.ToString("0.0###############") + rightFloat.ToString("0.0###############");
+                            case "$":
+                                return leftFloat.ToString("0.0###############") + "\n" + rightFloat.ToString("0.0###############");
                             case "%":
                                 throw new ArgumentException($"Operator '%' cannot be applied to operands of type 'float'");
                             default:
@@ -450,6 +458,10 @@ namespace Interpreter.Grammar
                                 return leftInt2 * rightFloat2;
                             case "/":
                                 return leftInt2 / rightFloat2;
+                            case "&":
+                                return leftInt2.ToString() + rightFloat2.ToString("0.0###############");
+                            case "$":
+                                return leftInt2.ToString() + "\n" + rightFloat2.ToString("0.0###############");
                             case "%":
                                 throw new ArgumentException($"Operator '%' cannot be applied to operands of type 'int' and 'float'");
                             default:
@@ -465,6 +477,10 @@ namespace Interpreter.Grammar
                                 return leftFloat2 * rightInt2;
                             case "/":
                                 return leftFloat2 / rightInt2;
+                            case "&":
+                                return leftFloat2.ToString("0.0###############") + rightInt2.ToString();
+                            case "$":
+                                return leftFloat2.ToString("0.0###############") + "\n" + rightInt2.ToString();
                             case "%":
                                 throw new ArgumentException($"Operator '%' cannot be applied to operands of type 'float' and 'int'");
                             default:
@@ -475,13 +491,134 @@ namespace Interpreter.Grammar
                     {
                         throw new ArgumentNullException("Operand cannot be null.");
                     }
+                    else if (left is char leftChar3 && right is float rightFloat4)
+                    {
+                        if (op == "&")
+                        {
+                            return leftChar3.ToString() + rightFloat4.ToString("0.0###############");
+                        }
+                        else if (op == "$")
+                        {
+                            return leftChar3.ToString() + "\n" + rightFloat4.ToString("0.0###############");
+                        }
+                        else
+                        {
+                            Console.WriteLine("leftChar3 + rightFloat4");
+                            throw new ArgumentException($"Unknown operator: {op}");
+                        }
+                    }
+                    else if (left is float leftFloat4 && right is char rightChar3)
+                    {
+                        if (op == "&")
+                        {
+                            return leftFloat4.ToString("0.0###############") + rightChar3;
+                        }
+                        else if (op == "$")
+                        {
+                            return leftFloat4.ToString("0.0###############") + "\n" + rightChar3;
+                        }
+                        else
+                        {
+                            Console.WriteLine("leftFloat4 + rightChar3");
+                            throw new ArgumentException($"Unknown operator: {op}");
+                        }
+                    }
+                    else if (left is string leftString && right is string rightString)
+                    {
+                        if (op == "&")
+                        {
+                            return leftString + rightString;
+                        }
+                        else if (op == "$")
+                        {
+                            return leftString + "\n" + rightString;
+                        }
+                        else
+                        {
+                            Console.WriteLine("leftString + rightString");
+                            throw new ArgumentException($"Unknown operator: {op}");
+                        }
+                    }
+                    else if (left is string leftString1 && right is int rightInt5)
+                    {
+                        if (op == "&")
+                        {
+                            return leftString1 + rightInt5;
+                        }
+                        else if (op == "$")
+                        {
+                            return leftString1 + "\n" + rightInt5;
+                        }
+                        else if (op == "*")
+                        {
+                            //Add these similarly in MultiDivModExpresison chuchu
+                            string numberString = new string(leftString1.Where(char.IsDigit).ToArray());
+                            if (int.TryParse(numberString, out int leftNumber))
+                            {
+                                int result = leftNumber * rightInt5;
+                                return new string(leftString1.Where(c => char.IsLetter(c) || char.IsSymbol(c) || char.IsPunctuation(c) || c == '#' || c == '$' || c == '&').ToArray()) + result.ToString();
+
+                            }
+                        }
+                        else if (op == "/")
+                        {
+                            string numberString = new string(leftString1.Where(char.IsDigit).ToArray());
+                            if (int.TryParse(numberString, out int leftNumber))
+                            {
+                                int result = leftNumber / rightInt5;
+                                return new string(leftString1.Where(c => char.IsLetter(c) || char.IsSymbol(c) || char.IsPunctuation(c) || c == '#' || c == '$' || c == '&').ToArray()) + result.ToString();
+                            }
+                        }
+                        else
+                        {
+                            throw new ArgumentException($"Unknown operator: {op}");
+                        }
+                        //Until here
+                    }
+
+                    else if (left is int leftInt5 && right is string rightString1)
+                    {
+                        if (op == "&")
+                        {
+                            return leftInt5 + rightString1;
+                        }
+                        else if (op == "$")
+                        {
+                            return leftInt5 + "\n" + rightString1;
+                        }
+                        else if (op == "*")
+                        {
+                            string numberString = new string(rightString1.Where(char.IsDigit).ToArray());
+                            if (int.TryParse(numberString, out int rightNumber))
+                            {
+                                int result = leftInt5 * rightNumber;
+                                return new string(rightString1.Where(c => char.IsLetter(c) || char.IsSymbol(c) || char.IsPunctuation(c) || c == '#' || c == '$' || c == '&').ToArray()) + result.ToString();
+
+                            }
+                        }
+                        else if (op == "/")
+                        {
+                            string numberString = new string(rightString1.Where(char.IsDigit).ToArray());
+                            if (int.TryParse(numberString, out int rightNumber))
+                            {
+                                int result = leftInt5 / rightNumber;
+                                return new string(rightString1.Where(c => char.IsLetter(c) || char.IsSymbol(c) || char.IsPunctuation(c) || c == '#' || c == '$' || c == '&').ToArray()) + result.ToString();
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("leftInt5 * rightString1");
+                            throw new ArgumentException($"Unknown operator: {op}");
+                        }
+                    }
                     else
                     {
                         // Operands are of different types
                         throw new ArgumentException($"Cannot perform operation on operands of different types: {left.GetType().Name} and {right.GetType().Name}");
                     }
                 }
-            }catch(Exception e)
+
+                }catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
